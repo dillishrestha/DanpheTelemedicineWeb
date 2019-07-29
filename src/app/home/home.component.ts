@@ -133,6 +133,8 @@ export class HomeComponent implements OnInit {
             });
     }
     VideoCall(callee) {
+        //this.router.navigate(['/Clinical']);
+        //return;
         var calee = this.liveUserList.find(a => a.username == callee.username);
         if (calee) {
             this.socketIOService.VideoCallRequest(this.loggedUserName, calee.id);

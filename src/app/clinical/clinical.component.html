@@ -1,0 +1,220 @@
+<div class="row no-margin" style="height: 100%;">
+    <div class="col-lg-2 col-sm-2">
+        <div class="row no-margin">
+            <div class="col-md-12 col-sm-12 no-padding">
+                <div class="container no-padding" style="height:100%;">
+                    <div class="row no-margin" style="height:100%;">
+                        <nav style="width: 100%;">
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a style="cursor: pointer;" title="Consult Request" class="btn btn-info custom-tabs nav-item nav-link" id="nav-consult-tab">
+                                    Consult Request
+                                </a>
+                            </div>
+                        </nav>
+                        <div class="tab-content div-finance-tab" id="nav-tabContent" style="height:90%; width: 100%; overflow: auto; padding-top: 1px;">
+                            <div class="tab-pane fade show active" style="height:100%;" id="nav-consult" role="tabpanel" aria-labelledby="nav-consult-tab">
+                                <div class="col-md-12 no-padding">
+                                    <!-- Consult Request -->
+                                    <div class="form-group">
+                                        <textarea class="form-control" [(ngModel)]="consult" placeholder="Enter consult request here..."> </textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary btn-sm" (click)="ConsultRequest()" style="margin: 2px;">
+                                            Request<i class="fa fa-reply"></i></button>
+                                    </div>
+                                    <div>
+                                        <ul id="ul-consult">
+                                            <li *ngFor="let row of consults">
+                                                {{ row }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-10 col-sm-10">
+        <div class="row" style="height: 100%;">
+            <div class="col-lg-7 col-sm-12">
+                <!--video/chat-->
+            </div>
+
+            <div class="col-lg-5 col-sm-12">
+                <div class="row no-margin" style="height: 10%; background-color: #d3d3d3;">
+                    <div class="col-md-12 col-sm-12 no-padding">
+                        <div id="remote-user"></div>
+                        <span id="call-timer"></span>
+                    </div>
+                </div>
+                <div class="row no-margin" style="height: 10%;background-color:#68a2e1;">
+                    <div id="local-user"></div>
+                </div>
+
+                <div class="row no-margin" style="height: 60%;">
+                    <div class="container no-padding" style="height:100%;">
+                        <div class="row no-margin" style="height:100%;">
+                            <div class="col-md-12 no-padding" style="height:100%;">
+                                <nav>
+                                    <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                        <a style="cursor: pointer;" title="Subjective" (click)="SwitchTabContent('nav-chief','clinical')" class="btn btn-info custom-tabs nav-item nav-link active" id="nav-chief-tab">
+                                            Chief Complain
+                                        </a>
+                                        <a style="cursor: pointer;" title="Objective" (click)="SwitchTabContent('nav-examination','clinical')" class="btn btn-info custom-tabs nav-item nav-link" id="nav-examination-tab">
+                                            Examination
+                                        </a>
+                                        <a style="cursor: pointer;" (click)="SwitchTabContent('nav-assessment','clinical')" class="btn btn-info custom-tabs nav-item nav-link" id="nav-assessment-tab">
+                                            Assessment
+                                        </a>
+                                        <a style="cursor: pointer;" (click)="SwitchTabContent('nav-plan','clinical')" class="btn btn-info custom-tabs nav-item nav-link" id="nav-plan-tab">
+                                            Plan
+                                        </a>
+                                        <a style="cursor: pointer;" title="Recommended" (click)="SwitchTabContent('nav-orders','clinical')" class="btn btn-info custom-tabs nav-item nav-link" id="nav-orders-tab">
+                                            Orders
+                                        </a>
+                                    </div>
+                                </nav>
+                                <div class="tab-content div-finance-tab" id="nav-tabContent" style="height:90%;  overflow: auto; padding-top: 1px;">
+                                    <div class="tab-pane fade show active" style="height:100%;" id="nav-chief" role="tabpanel" aria-labelledby="nav-chief-tab">
+                                        <div class="col-md-12 no-padding">
+                                            <!--Chief complain-->
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <textarea class="form-control" [(ngModel)]="complain" placeholder="Enter note here..."> </textarea>
+                                            </div>
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <button class="btn btn-primary btn-sm" (click)="Save('Complain')" style="margin: 2px;"><i class="fa fa-save"></i> Save</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;">Pend</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;"><i
+                                                        class="fa fa-trash-o"></i>
+                                                    Delete</button>
+                                            </div>
+                                            <div>
+                                                <ul id="ul-complain">
+                                                    <li *ngFor="let row of complains">
+                                                        {{ row }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="nav-examination" role="tabpanel" aria-labelledby="nav-examination-tab">
+                                        <div class="col-md-12 no-padding">
+                                            <!--Examination-->
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <textarea class="form-control" [(ngModel)]="examination" placeholder="Enter note here..."> </textarea>
+                                            </div>
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <button class="btn btn-primary btn-sm" (click)="Save('Examination')" style="margin: 2px;"><i class="fa fa-save"></i>
+                                                    Save</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;">Pend</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;"><i
+                                                        class="fa fa-trash-o"></i>
+                                                    Delete</button>
+                                            </div>
+                                            <div>
+                                                <ul id="ul-examination">
+                                                    <li *ngFor="let row of examinations">
+                                                        {{ row }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="nav-assessment" role="tabpanel" aria-labelledby="nav-assessment-tab">
+                                        <div class="col-md-12 no-padding">
+                                            <!--Assessment-->
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <textarea class="form-control" [(ngModel)]="assessment" placeholder="Enter note here..."> </textarea>
+                                            </div>
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <button class="btn btn-primary btn-sm" (click)="Save('Assessment')" style="margin: 2px;"><i class="fa fa-save"></i> Save</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;">Pend</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;"><i
+                                                        class="fa fa-trash-o"></i>
+                                                    Delete</button>
+                                            </div>
+                                            <div>
+                                                <ul id="ul-assessment">
+                                                    <li *ngFor="let row of assessments">
+                                                        {{ row }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="nav-plan" role="tabpanel" aria-labelledby="nav-plan-tab">
+                                        <div class="col-md-12 no-padding">
+                                            <!--Plan-->
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <textarea class="form-control" [(ngModel)]="plan" placeholder="Enter note here..."> </textarea>
+                                            </div>
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <button class="btn btn-primary btn-sm" (click)="Save('Plan')" style="margin: 2px;"><i class="fa fa-save"></i> Save</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;">Pend</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;"><i
+                                                        class="fa fa-trash-o"></i>
+                                                    Delete</button>
+                                            </div>
+                                            <div>
+                                                <ul id="ul-plan">
+                                                    <li *ngFor="let row of plans">
+                                                        {{ row }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="nav-orders" role="tabpanel" aria-labelledby="nav-orders-tab">
+                                        <div class="col-md-12 no-padding">
+                                            <!--Orders-->
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <textarea class="form-control" [(ngModel)]="order" placeholder="Enter note here..."> </textarea>
+                                            </div>
+                                            <div class="form-group" *ngIf="isDoctor">
+                                                <button class="btn btn-primary btn-sm" (click)="Save('Orders')" style="margin: 2px;"><i class="fa fa-save"></i> Save</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;">Pend</button>
+                                                <button class="btn btn-primary btn-sm" style="margin: 2px;"><i
+                                                        class="fa fa-trash-o"></i>
+                                                    Delete</button>
+                                            </div>
+                                            <div>
+                                                <ul id="ul-order">
+                                                    <li *ngFor="let row of orders">
+                                                        {{ row }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-margin" style="height: 10%; width:100%; overflow: auto;" id="div-file">
+                    <input hidden id="uploadfile" #file type="file" (change)="UploadFile(file.files)" />
+                    <button onclick="document.getElementById('uploadfile').click();" class="btn btn-sm btn-success" style="position: absolute; right:10px;">
+                        <i class="fa fa-upload"></i>Upload File</button>
+                    <span style="font-weight:bold;color:green;" *ngIf="fileuploadprogress > 0 && fileuploadprogress < 100">
+                        Uploading... {{fileuploadprogress}}%
+                    </span>
+                    <span style="font-weight:bold;color:green;" *ngIf="fileUploadMessage">
+                        {{fileUploadMessage}}
+                    </span>
+                    <div class="row no-margin" style="width: 100%;" *ngFor="let r of sessionDocList">
+                        <a (click)="GetDocument(r.SessionDocumentId)" class="download-link"><i
+                                class="fa fa-download"></i>{{r.FileName}}</a>
+                    </div>
+                </div>
+                <div class="row no-margin" style="height: 10%; overflow: auto;">
+                    <div style="height: 100%;text-align: center;background-color: #76797b;" class="col-md-12 col-sm-12 no-padding">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

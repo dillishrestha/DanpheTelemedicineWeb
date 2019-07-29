@@ -17,6 +17,14 @@ ng-component {
     width: 100%;
 }
 
+.no-margin {
+    margin: 0px;
+}
+
+.no-padding {
+    padding: 0px;
+}
+
 
 /*--------------------------------------------------------------
 # Header
