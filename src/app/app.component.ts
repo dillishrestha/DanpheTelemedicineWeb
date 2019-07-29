@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { SocketIOService } from './services/socket.io.service';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
+import { GlobalService } from './services/global.service';
 
 @Component({
   selector: 'app-root',
@@ -10,13 +11,18 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   title = 'chatApp';
+  public globalService: GlobalService;
+
   constructor(private socketIOService: SocketIOService,
-    private router: Router) {
-      this.router.navigate(['/']);
+    private router: Router,
+    private _serv: GlobalService) {
+    this.router.navigate(['/']);
+    this.globalService = _serv;
   }
-  Logout(){
-      sessionStorage.clear();
-      document.getElementById("btn-logout").style.display="none";
-      this.router.navigate(['/Login']);
+  Logout() {
+    this.socketIOService.RemoveUser();
+    sessionStorage.clear();
+    this._serv.isUserLoggedin = false;
+    this.router.navigate(['/Login']);
   }
 }

@@ -1,9 +1,9 @@
 <header id="header">
     <div class="container">
         <div id="logo" class="pull-left logo" style="height: 40px;">
-
+            <img class="logo" style="height:100%; position:absolute;" src="../assets/images/logo.png" alt="DanpheTelemedicine" title="DanpheTelemedicine" />
         </div>
-        <button (click)="Logout()" id="btn-logout" class="btn btn-danger btn-sm" style="display:none; position: fixed; top:5px; right:0px;">Logout</button>
+        <button (click)="Logout()" id="btn-logout" *ngIf="globalService.isUserLoggedin" class="btn btn-danger btn-sm" style="position: fixed; top:5px; right:0px;">Logout</button>
     </div>
 </header>
 <main id="main" class="main" style="height:100%;">

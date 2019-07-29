@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { SocketIOService } from '../services/socket.io.service';
+import { GlobalService } from '../services/global.service';
 
 @Component({
     templateUrl: './home.component.html'
@@ -21,11 +22,14 @@ export class HomeComponent implements OnInit {
     constructor(
         private router: Router,
         private changeDetector: ChangeDetectorRef,
-        private socketIOService: SocketIOService) {
+        private socketIOService: SocketIOService,
+        private globalService: GlobalService) {
         this.loggedUserName = sessionStorage.getItem("username");
         if (!this.loggedUserName) {
+            this.globalService.isUserLoggedin = false;
             this.router.navigate(['/Login']);
         } else {
+            this.globalService.isUserLoggedin = true;
             this.AddUser();
         }
     }
@@ -161,10 +165,5 @@ export class HomeComponent implements OnInit {
     Close() {
         this.isVideoCall = false;
         this.changeDetector.detectChanges();
-    }
-    Logout() {
-        this.socketIOService.RemoveUser();
-        sessionStorage.clear();
-        location.reload();
     }
 }

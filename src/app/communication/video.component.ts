@@ -90,9 +90,15 @@ export class VideoComponent implements OnInit {
 
         this.peerConnection.setConfiguration(iceServerConfig);
 
-        this.localStream.getTracks().forEach(track => {
-            this.peerConnection.addTrack(track, this.localStream);
-        });
+        try {
+            this.localStream.getTracks().forEach(track => {
+                this.peerConnection.addTrack(track, this.localStream);
+            });
+        } catch (ex) {
+            alert("unable to get local camera..!");
+            console.log(ex);
+            this.router.navigate(['/']);
+        }
         //this.peerConnection.addStream(this.localStream);
         this.peerConnection.onicecandidate = e => {
             this.OnIceCandidate(this.peerConnection, e);
@@ -357,9 +363,14 @@ export class VideoComponent implements OnInit {
         console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
     }
     EndCall() {
-        var caller = this.socketIOService.connectedusers.find(a => a.id == this.caller);
-        this.socketIOService.EndVideoCall(this.loggedUserName, this.caller, caller.username);
-        this.CallBack();
+        try {
+            var caller = this.socketIOService.connectedusers.find(a => a.id == this.caller);
+            this.socketIOService.EndVideoCall(this.loggedUserName, this.caller, caller.username);
+        } catch (ex) {
+            console.log(ex);
+        } finally {
+            this.CallBack();
+        }
     }
     OnCallEnded() {
         this.socketIOService
@@ -372,22 +383,26 @@ export class VideoComponent implements OnInit {
             });
     }
     CallBack() {
-        var senders = this.peerConnection.getSenders();
-        senders.forEach(s => {
-            this.peerConnection.removeTrack(s);
-        });
+        try {
+            var senders = this.peerConnection.getSenders();
+            senders.forEach(s => {
+                this.peerConnection.removeTrack(s);
+            });
 
-        // stop both video and audio
-        this.localStream.getTracks().forEach((track) => {
-            track.stop();
-        });
-        // stop only audio
-        this.localStream.getAudioTracks()[0].stop();
-        //stop only audio 
-        this.localStream.getVideoTracks()[0].stop();
-        //this.peerConnection.close();
-
-        this.peerConnection = new RTCPeerConnection();
-        this.callback.emit({ status: "ended" });
+            // stop both video and audio
+            this.localStream.getTracks().forEach((track) => {
+                track.stop();
+            });
+            // stop only audio
+            this.localStream.getAudioTracks()[0].stop();
+            //stop only audio 
+            this.localStream.getVideoTracks()[0].stop();
+        } catch (ex) {
+            console.log(ex);
+        } finally {
+            this.peerConnection.close();
+            this.peerConnection = null;
+            this.callback.emit({ status: "call ended" });
+        }
     }
 }

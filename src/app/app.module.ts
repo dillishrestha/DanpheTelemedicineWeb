@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 import { SocketIOService } from './services/socket.io.service';
+import { GlobalService } from './services/global.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { HomeComponent } from './home/home.component';
@@ -31,6 +32,7 @@ import { VideoComponent } from './communication/video.component';
   ],
   providers: [
     SocketIOService,
+    GlobalService,
     { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
