@@ -33,3 +33,32 @@
     cursor: pointer;
     background-color: gray;
 }
+
+
+/**
+*Chat
+*/
+
+.sent-message {
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 3px;
+    word-break: break-word;
+    color: black;
+    margin: 0px 0px 0px 15px;
+    background-color: rgb(120, 224, 143);
+    width: 100%;
+    text-align: right;
+}
+
+.received-message {
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 3px;
+    word-break: break-word;
+    color: black;
+    margin: 0px 15px 0px 0px;
+    background-color: rgb(130, 204, 221);
+    width: 100%;
+    text-align: left;
+}

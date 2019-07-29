@@ -8,11 +8,17 @@
                 <td>
                     <button (click)="VideoCall(u)" *ngIf="(!isVideoCallAccepted || u.username==loggedUserName) && !u.busy" class="btn btn-success btn-sm">Video Call</button>
                 </td>
+                <td>
+                    <button (click)="Chat(u)" *ngIf="(!isChat || u.username==loggedUserName) && !u.busy" class="btn btn-success btn-sm">Chat</button>
+                </td>
             </tr>
         </table>
     </div>
-    <div class="col-md-10">
-        <video-call [userType]="userType" [caller]="caller" (callback)="CallBack($event)" *ngIf="isVideoCallAccepted">Loading</video-call>
+    <div class="col-md-10" *ngIf="isVideoCallAccepted">
+        <video-call [userType]="userType" [caller]="caller" (callback)="CallBack($event)">Loading</video-call>
+    </div>
+    <div class="col-md-10" *ngIf="isChat">
+        <message [caller]="caller" (callback)="CallBack($event)"></message>
     </div>
 </div>
 
@@ -29,5 +35,4 @@
             <button (click)="RejectVideoCall()" class="btn btn-danger btn-sm">Reject</button>
         </div>
     </div>
-
 </div>

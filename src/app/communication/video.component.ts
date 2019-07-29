@@ -97,7 +97,7 @@ export class VideoComponent implements OnInit {
         } catch (ex) {
             alert("unable to get local camera..!");
             console.log(ex);
-            this.router.navigate(['/']);
+            this.CallBack();
         }
         //this.peerConnection.addStream(this.localStream);
         this.peerConnection.onicecandidate = e => {
@@ -346,19 +346,24 @@ export class VideoComponent implements OnInit {
     HandleDeviceError(error) {
         if (error.name == "NotFoundError" || error.name == "DevicesNotFoundError") {
             alert("webcam or mic not connected to your system");
+            this.CallBack();
         }
         else if (error.name == "NotReadableError" || error.name == "TrackStartError") {
             alert("webcam or mic already in use by another application");
+            this.CallBack();
         } else if (error.name == "OverconstrainedError" || error.name == "ConstraintNotSatisfiedError") {
             alert("webcam or mic not supported!");
+            this.CallBack();
         } else if (error.name == "NotAllowedError" || error.name == "PermissionDeniedError") {
             alert("Access denied for accessing webcam or mic!");
+            this.CallBack();
         } else if (error.name == "MediaStreamError" || error.name == "TypeError") {
             //empty constraints object
             //alert("Unable to get media!");
             console.log("empty constraints object");
         } else if (error.name == "PermissionDismissedError") {
             alert("Permission is dismissed for access webcam or mic");
+            this.CallBack();
         }
         console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
     }
@@ -397,11 +402,11 @@ export class VideoComponent implements OnInit {
             this.localStream.getAudioTracks()[0].stop();
             //stop only audio 
             this.localStream.getVideoTracks()[0].stop();
+            this.peerConnection.close();
         } catch (ex) {
             console.log(ex);
         } finally {
-            this.peerConnection.close();
-            this.peerConnection = null;
+            this.ngOnInit();
             this.callback.emit({ status: "call ended" });
         }
     }

@@ -19,18 +19,10 @@ io.on('connection', (socket) => {
     var addedUser = false;
     console.log('user connected');
 
-    // when the client emits 'new message', this listens and executes
-    // socket.on('new-message', (data) => {
-    //     // we tell the client to execute 'new message'
-    //     socket.broadcast.emit('new-message', {
-    //         username: socket.username,
-    //         message: data
-    //     });
-    // });
-    socket.on('new-message', (data) => {
-        socket.broadcast.to(data.toid).emit('new-message', data);
-    });
-
+    /***
+     * Section Common
+     * following requests are used for handle user
+     */
     socket.on('add user', (username) => {
         if (addedUser) return;
         clients.push({
@@ -58,6 +50,28 @@ io.on('connection', (socket) => {
         setInterval(() => {
             socket.broadcast.emit('client-list', clients);
         }, 3000);
+    });
+
+
+    /***
+     * Section Chat
+     * following requests are used for chat
+     */
+
+    socket.on('chat-request', (toid) => {
+        socket.broadcast.to(toid).emit('chat-request', socket.id);
+    });
+    // when the client emits 'new message', this listens and executes
+    // socket.on('new-message', (data) => {
+    //     // we tell the client to execute 'new message'
+    //     socket.broadcast.emit('new-message', {
+    //         username: socket.username,
+    //         message: data
+    //     });
+    // });
+
+    socket.on('new-message', (data) => {
+        socket.broadcast.to(data.toid).emit('new-message', data);
     });
 
     // when the client emits 'typing', we broadcast it to others

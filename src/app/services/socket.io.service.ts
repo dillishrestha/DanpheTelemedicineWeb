@@ -51,6 +51,23 @@ export class SocketIOService {
             });
         });
     }
+
+    /***
+     * Section Chat
+     * following requests are used for Chat
+     */
+
+    SendChatRequest(toid) {
+        this.socket.emit('chat-request', toid);
+    }
+    OnChatRequest() {
+        return Observable.create((observer) => {
+            this.socket.on('chat-request', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+
     /***
      * Section Video call
      * following requests are used for video call

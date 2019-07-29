@@ -1,7 +1,32 @@
-<div>
-    <span *ngFor="let m of users">{{m}}<br></span>
-    <input type="text" [(ngModel)]="message">
-    <button (click)="SendMessage()">Send</button>
-    <button (click)="GetUserList()">GetUserList</button>
+<div class="row" style="margin: 0px;">
+    <div class="row" style="margin: 0px; padding-left: 20px; width: 100%;">
+        <div class="row" *ngFor="let m of messages" style="width: 100%; margin-bottom: 2px;">
+            <div class="sent-message" *ngIf="m.Type == 'sent'">
+                {{m.Message}}
+                <br>
+                <span style="font-size: 10px;color: gray;">
+                    <b style="color:black;">{{m.Sender}}</b> {{m.Date}}
+                </span>
+                <span style="padding-left: 5px;" id="checkmark-3" title="Received">
+                    <i class="fa fa-check"></i>
+                </span>
+            </div>
+            <div class="received-message" *ngIf="m.Type == 'received'">
+                {{m.Message}}
+                <br>
+                <span style="font-size: 10px;color: gray;">
+                    <b style="color:black;">{{m.Sender}}</b> {{m.Date}}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <input type="text" class="form-control" [(ngModel)]="message">
+        </div>
+        <div class="col-md-4">
+            <button id="btn-chat-message" (click)="SendMessage()" class="btn btn-primary btn-send btn-sm">
+                <i class="fa fa-paper-plane"></i></button>
+        </div>
+    </div>
 </div>
-<span *ngFor="let m of messages">{{m}}<br></span>

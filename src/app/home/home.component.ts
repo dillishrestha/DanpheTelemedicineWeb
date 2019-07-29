@@ -40,6 +40,7 @@ export class HomeComponent implements OnInit {
         this.OnVideoCallAccepted();
         this.GetBusyUsers();
         this.OnVideoCallRejected();
+        this.OnChatRequest();
     }
 
     AddUser() {
@@ -68,6 +69,24 @@ export class HomeComponent implements OnInit {
                 }
             });
     }
+    OnChatRequest() {
+        this.socketIOService
+            .OnChatRequest()
+            .subscribe(data => {
+                if (data) {
+                    this.isChat = true;
+                    this.caller = data;
+                }
+            });
+    }
+
+    Chat(callee) {
+        this.isChat = true;
+        var calee = this.liveUserList.find(a => a.username == callee.username);
+        this.caller = calee.id;
+        this.socketIOService.SendChatRequest(calee.id);
+    }
+
     OnVideoCallRequest() {
         this.socketIOService
             .OnVideoCallRequest()
@@ -113,10 +132,6 @@ export class HomeComponent implements OnInit {
                 }, 1000);
             });
     }
-    Chat() {
-        this.isChat = true;
-    }
-
     VideoCall(callee) {
         var calee = this.liveUserList.find(a => a.username == callee.username);
         if (calee) {
