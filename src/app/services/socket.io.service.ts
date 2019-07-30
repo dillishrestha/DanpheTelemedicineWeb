@@ -11,7 +11,7 @@ export class SocketIOService {
         this.socket = io(this.url);
     }
 
-    SetUserName(username) {
+    public SetUserName(username) {
         this.socket.emit('add user', username);
         return Observable.create((observer) => {
             this.socket.on('logged-user', (data) => {
@@ -21,7 +21,9 @@ export class SocketIOService {
         });
     }
     public RemoveUser() {
-        this.socket.emit('disconnect');
+        this.socket.close();
+        
+        this.socket = io(this.url);
     }
 
     public BroadCastMessage(message) {

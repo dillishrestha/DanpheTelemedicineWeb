@@ -1,4 +1,72 @@
-<div class="row">
+<div class="row no-margin" style="height: 100%;">
+    <div class="col-lg-3 col-sm-12 div-userlist">
+        <div class="col-md-12 no-padding" style="height: 100%;">
+            <nav style="height: 42px;">
+                <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                    <a style="cursor: pointer;" (click)="SwitchTabContent('nav-contacts')" class="btn btn-info custom-tabs nav-item nav-link active" id="nav-contacts-tab">
+                        Contacts
+                    </a>
+                    <a style="cursor: pointer;" (click)="SwitchTabContent('nav-meeting')" class="btn btn-info custom-tabs nav-item nav-link" id="nav-meeting-tab">
+                        Meeting
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content div-contacts-tab" id="nav-tabContent" style="height:87%;">
+                <div class="tab-pane fade show active" style="height:100%;" id="nav-contacts" role="tabpanel" aria-labelledby="nav-contacts-tab">
+                    <div class="col-md-12 no-padding table-responsive" style="margin: 0px;height: 100%;">
+                        <h4 style="text-align: center;">Contacts</h4>
+                        <button (click)="ShowAddContact()" class="btn btn-sm btn-success btn-add-contact"><i class="fa fa-plus"></i></button>
+                        <table id="tbl-user-contacts" class="table" width="100%">
+                            <tr style="text-align: center;">
+                                <th>UserName</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr *ngFor="let row of contactListTodispaly">
+                                <td>{{row.username}}</td>
+                                <td>
+                                    <button *ngIf="row.live" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
+                                        <i class="fa fa-video-camera"></i>
+                                    </button>
+                                    <button hidden title="Audio Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="UserVideoCall(row.id)">
+                                        <i class="fa fa-phone"></i>
+                                    </button>
+                                    <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="ChatHistory(row)">
+                                            <i class="fa fa-history"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade show" id="nav-meeting" role="tabpanel" aria-labelledby="nav-meetting-tab" style="height: 100%;">
+                    <div class="col-md-12 no-padding table-responsive" style="height: 100%;">
+                        <h4 style="text-align: center;">Meeting</h4>
+                        <table id="tbl-user-contacts" class="table" width="100%">
+                            <tr style="text-align: center;">
+                                <th>Meeting Id</th>
+                                <th>Created On</th>
+                            </tr>
+                            <tr *ngFor="let row of meetings" (click)="ShowMeeting(row)" id="{{row.ConferenceId}}">
+                                <td>{{row.ConferenceRoomId}}</td>
+                                <td>
+                                    {{row.CreatedOn | date:'medium'}}
+                                    <!-- <button style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="UserVideoCall(row.ContactId)">
+                                            <i class="fa fa-video-camera"></i>
+                                        </button> -->
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9 col-sm-12"></div>
+</div>
+
+
+
+<div class="row" hidden>
     <div class="col-lg-2">
         <table>
             <tr *ngFor="let u of liveUserList">
@@ -22,7 +90,7 @@
     </div>
 </div>
 
-<!-- The Modal -->
+<!-- Video Call Popup -->
 <div class="popup-box" *ngIf="isVideoCall">
     <div class="popup-content">
         <span (click)="Close()" class="popup-close">&times;</span>
@@ -33,6 +101,16 @@
         <div *ngIf="callingInfo.type == 'receiver'" style="text-align: center;">
             <button (click)="AcceptVideoCall()" class="btn btn-success btn-sm">Accept</button>
             <button (click)="RejectVideoCall()" class="btn btn-danger btn-sm">Reject</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Contact Popup -->
+<div class="popup-box" *ngIf="isAddContact">
+    <div class="popup-content">
+        <span (click)="CloseAddContact()" class="popup-close">&times;</span>
+        <div class="popup-header">
+            We are working on it, Use demo crediantials for full demo
         </div>
     </div>
 </div>

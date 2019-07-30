@@ -41,6 +41,8 @@
         <div class="row" style="height: 100%;">
             <div class="col-lg-7 col-sm-12">
                 <!--video/chat-->
+                <div *ngIf="!isVideoCall">Loading Wait....</div>
+                <video-call *ngIf="isVideoCall" [userType]="userType" [caller]="caller" (callback)="CallBack($event)">Loading</video-call>
             </div>
 
             <div class="col-lg-5 col-sm-12">

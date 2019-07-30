@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 
         setInterval(() => {
             socket.broadcast.emit('client-list', clients);
-        }, 3000);
+        }, 2000);
     });
 
 
@@ -93,27 +93,18 @@ io.on('connection', (socket) => {
         if (addedUser) {
             --numUsers;
             if (clients.length > 0) {
-                var i = 0;
-                clients.forEach(a => {
-                    if (a.username == socket.username) {
-                        clients.splice(i, 1);
-                    }
-                    i++;
-                });
+                var usr = clients.find(a => a.username == socket.username);
+                var index = clients.indexOf(usr);
+                if (index !== -1) {
+                    clients.splice(index, 1);
+                }
             }
-            // var index = clients.indexOf(socket.username);
-            // if (index !== -1) {
-            //     clients.splice(index, 1);
-            // }
-
             if (busyUsers.length > 0) {
-                var i = 0;
-                busyUsers.forEach(a => {
-                    if (a.username == socket.username) {
-                        busyUsers.splice(i, 1);
-                    }
-                    i++;
-                });
+                var usr1 = busyUsers.find(a => a.username == socket.username);
+                var index1 = busyUsers.indexOf(usr1);
+                if (index1 !== -1) {
+                    busyUsers.splice(index1, 1);
+                }
             }
             // echo globally that this client has left
             socket.broadcast.emit('user-left', socket.username);

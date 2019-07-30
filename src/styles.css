@@ -175,6 +175,17 @@ ng-component {
 
 
 /*------------------------------------------
+Login 
+-------------------------------------------*/
+
+.login-div {
+    border: 1px solid #000!important;
+    border-radius: 15px!important;
+    height: fit-content!important;
+}
+
+
+/*------------------------------------------
  The Modal (background)
  ------------------------------------------- */
 
@@ -202,7 +213,8 @@ ng-component {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 35%;
+    border-radius: 10px;
 }
 
 .popup-close {
@@ -219,6 +231,27 @@ ng-component {
     color: #000;
     text-decoration: none;
     cursor: pointer;
+}
+
+
+/**
+* Tabs
+*/
+
+.nav-link {
+    color: gray;
+    font-size: 12px;
+    padding: 0px;
+}
+
+.project-tab #tabs .nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    color: #0062cc;
+    background-color: transparent;
+    border-color: transparent transparent #f3f3f3;
+    border-bottom: 3px solid !important;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 

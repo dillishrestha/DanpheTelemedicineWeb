@@ -13,6 +13,9 @@ import { HttpEventType } from '@angular/common/http';
 export class ClinicalComponent {
 
     public isDoctor = true;
+    public isVideoCall = false;
+    public userType: string;
+    public caller: any;
     public consult: string = '';
     public consults: string[] = new Array<string>();
     public complain: string;
@@ -31,8 +34,32 @@ export class ClinicalComponent {
 
 
     constructor(private blService: BLService,
-        private globalService: GlobalService) {
+        private globalService: GlobalService,
+        private changeDetector: ChangeDetectorRef,
+        private router: Router) {
+        if (this.globalService.callType) {
+            this.userType = this.globalService.callType;
+        }
+        if (this.globalService.caller) {
+            this.caller = this.globalService.caller;
+        }
+        if (this.caller && this.userType) {
+            setTimeout(() => {
+                this.isVideoCall = true;
+            }, 1000);
+        } else {
+            alert("something wrong!! Try again!!");
+            this.router.navigate(['/']);
+        }
+    }
 
+    /**
+     * Video Call Methods
+     */
+    CallBack(event) {
+        this.isVideoCall = false;
+        this.changeDetector.detectChanges();
+        location.reload();
     }
 
     /**

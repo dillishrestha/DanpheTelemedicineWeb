@@ -3,9 +3,11 @@ import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { SocketIOService } from '../services/socket.io.service';
 import { GlobalService } from '../services/global.service';
+import { BLService } from '../shared/bl.service';
 
 @Component({
-    templateUrl: './home.component.html'
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
     public loggedUserName;
@@ -15,26 +17,43 @@ export class HomeComponent implements OnInit {
     public liveUserList = [];
     public callee: any;
     public callingInfo = { name: "", content: "", type: "" };
-    public isVideoCallAccepted: boolean = false;
-    public userType: string;
-    public caller: any;
+    public userContacts: any;
+    public isAddContact = false;
+    public userList: any;
+    public contactListTodispaly = new Array<{ username: string, id: number, sessionid: string, live: boolean, busy: boolean }>();
 
     constructor(
         private router: Router,
         private changeDetector: ChangeDetectorRef,
         private socketIOService: SocketIOService,
-        private globalService: GlobalService) {
+        private globalService: GlobalService,
+        private blService: BLService) {
         this.loggedUserName = sessionStorage.getItem("username");
         if (!this.loggedUserName) {
             this.globalService.isUserLoggedin = false;
             this.router.navigate(['/Login']);
         } else {
             this.globalService.isUserLoggedin = true;
+            this.globalService.loggedUserInfo = JSON.parse(sessionStorage.getItem('loggeduser'));
+            /**
+             * after user login success
+             * add user in socket.io for handling user events
+             */
             this.AddUser();
+
+            /**
+             * Database calls
+             */
+            this.GetUserContacts();
         }
     }
 
     ngOnInit() {
+        /**
+         * Methods for handling socket event
+         * below methods accepts data from socket
+         * after emitting data below methods are invoked automatically
+         */
         this.GetLiveUsers();
         this.OnVideoCallRequest();
         this.OnVideoCallAccepted();
@@ -55,19 +74,58 @@ export class HomeComponent implements OnInit {
         this.socketIOService
             .GetConnectedUsers()
             .subscribe(data => {
-                var users = data.filter(a => a.username != this.loggedUserName);
-                var count = 0;
-                for (var i in users) {
-                    if (this.liveUserList.indexOf(data[i]) === -1) {
-                        count++;
+                this.GotLiveUsers(data);
+            });
+    }
+    GotLiveUsers(data) {
+        var users = data.filter(a => a.username != this.loggedUserName);
+        if (this.liveUserList.length > 0) {
+            var count = 0;
+            for (var i in users) {
+                if (this.liveUserList.indexOf(data[i]) === -1) {
+                    count++;
+                }
+            }
+            if (count != this.liveUserList.length) {
+                this.liveUserList = users;
+                this.socketIOService.connectedusers = users;
+                this.GetBusyUsers();
+            }
+        } else {
+            this.socketIOService.connectedusers = users;
+            this.liveUserList = users;
+        }
+        if (this.userContacts) {
+            if (this.userContacts.length > 0) {
+                for (let i = 0; i < this.userContacts.length; i++) {
+                    var live = false;
+                    var busy = false;
+                    var sessionid = "";
+                    if (this.liveUserList.length > 0) {
+                        var liveusr = this.liveUserList.find(a => a.username == this.userContacts[i].ContactName);
+                        if (liveusr.id) {
+                            live = true;
+                            sessionid = liveusr.id;
+                            busy = liveusr.busy;
+                        }
+                    }
+                    var usr = this.contactListTodispaly.find(a => a.username == this.userContacts[i].ContactName);
+                    if (usr == undefined) {
+                        this.contactListTodispaly.push({
+                            username: this.userContacts[i].ContactName,
+                            id: this.userContacts[i].ContactId,
+                            sessionid: sessionid,
+                            live: live,
+                            busy: busy
+                        });
+                    } else {
+                        usr.live = live;
+                        usr.sessionid = sessionid;
+                        usr.busy = busy;
                     }
                 }
-                if (count != this.liveUserList.length) {
-                    this.liveUserList = users;
-                    this.socketIOService.connectedusers = users;
-                    this.GetBusyUsers();
-                }
-            });
+            }
+        }
     }
     OnChatRequest() {
         this.socketIOService
@@ -75,7 +133,7 @@ export class HomeComponent implements OnInit {
             .subscribe(data => {
                 if (data) {
                     this.isChat = true;
-                    this.caller = data;
+                    this.globalService.caller = data;
                 }
             });
     }
@@ -83,7 +141,7 @@ export class HomeComponent implements OnInit {
     Chat(callee) {
         this.isChat = true;
         var calee = this.liveUserList.find(a => a.username == callee.username);
-        this.caller = calee.id;
+        this.globalService.caller = calee.id;
         this.socketIOService.SendChatRequest(calee.id);
     }
 
@@ -102,9 +160,9 @@ export class HomeComponent implements OnInit {
             .OnVideoCallAccepted()
             .subscribe(data => {
                 var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
-                this.userType = "dialer";
-                this.caller = calee.id;
-                this.isVideoCallAccepted = true;
+                this.globalService.callType = 'dialer';
+                this.globalService.caller = calee.id;
+                this.router.navigate(['/Clinical']);
                 this.socketIOService.BusyNow();
                 this.Close();
             });
@@ -150,9 +208,9 @@ export class HomeComponent implements OnInit {
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
             this.socketIOService.VideoCallAccepted(this.loggedUserName, calee.id);
-            this.userType = "receiver";
-            this.caller = calee.id;
-            this.isVideoCallAccepted = true;
+            this.globalService.callType = 'receiver';
+            this.globalService.caller = calee.id;
+            this.router.navigate(['/Clinical']);
             this.socketIOService.BusyNow();
         }
         this.Close();
@@ -162,7 +220,6 @@ export class HomeComponent implements OnInit {
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
             this.socketIOService.VideoCallRejected(this.loggedUserName, calee.id);
-            this.isVideoCallAccepted = false;
         }
         this.Close();
     }
@@ -174,7 +231,6 @@ export class HomeComponent implements OnInit {
         this.isChat = false;
         this.isVideoCall = false;
         this.isAudioCall = false;
-        this.isVideoCallAccepted = false;
         this.changeDetector.detectChanges();
         location.reload();
     }
@@ -182,5 +238,64 @@ export class HomeComponent implements OnInit {
     Close() {
         this.isVideoCall = false;
         this.changeDetector.detectChanges();
+    }
+
+    ShowAddContact() {
+        this.isAddContact = true;
+    }
+    CloseAddContact() {
+        this.isAddContact = false;
+    }
+    /**
+     * UI methods
+     */
+    SwitchTabContent(eleid) {
+        var idlist = ['nav-contacts', 'nav-meeting'];
+
+        idlist.forEach(id => {
+            var tab = document.getElementById(id + '-tab');
+            var tabcontent = document.getElementById(id);
+            var tabclass = "btn btn-info custom-tabs nav-item nav-link";
+            var tabcontentclass = "tab-pane fade show";
+            if (id == eleid) {
+                tabclass += " active";
+                tabcontentclass += " active";
+            }
+            tab.className = tabclass;
+            tabcontent.className = tabcontentclass;
+        });
+    }
+    /**
+     * Database methods
+     */
+    //get current user contacts
+    public GetUserContacts() {
+        try {
+            this.blService.GetUserContacts(this.globalService.loggedUserInfo.UserId)
+                .subscribe(res => {
+                    if (res.Status == 'OK') {
+                        this.userContacts = res.Results;
+                    } else {
+                        console.log(res.ErrorMessgae);
+                    }
+                });
+        } catch (ex) {
+            console.log(ex);
+        }
+    }
+    //get all users for add contacts
+    public GetUserList() {
+        try {
+            this.blService.GetUserList()
+                .subscribe(res => {
+                    if (res.Status == 'OK') {
+                        this.userList = res.Results;
+                    } else {
+                        console.log(res.ErrorMessgae);
+                    }
+                })
+        } catch (ex) {
+            console.log(ex);
+        }
     }
 }

@@ -4,6 +4,7 @@
             <img class="logo" style="height:100%; position:absolute;" src="../assets/images/logo.png" alt="DanpheTelemedicine" title="DanpheTelemedicine" />
         </div>
         <button (click)="Logout()" id="btn-logout" *ngIf="globalService.isUserLoggedin" class="btn btn-danger btn-sm" style="position: fixed; top:5px; right:0px;">Logout</button>
+        <button (click)="ShowPopUp()" id="btn-logout" *ngIf="!globalService.isUserLoggedin" class="btn btn-primary btn-sm" style="position: fixed; top:5px; right:0px;">Register</button>
     </div>
 </header>
 <main id="main" class="main" style="height:100%;">
@@ -17,3 +18,55 @@
 </main>
 
 <footer>Danphe Telemedicine</footer>
+
+<div class="popup-box" *ngIf="isUserRegister">
+    <div class="popup-content">
+        <span (click)="ClosePopUp()" class="popup-close">&times;</span>
+        <div class="popup-header">
+            <h2 style="width:100%;">Register User</h2>
+            <hr>
+            <form>
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                        Enter user name:
+                    </div>
+                    <div class="col-lg-6 col-sm-6">
+                        <input [(ngModel)]="username" [ngModelOptions]="{standalone: true}" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                        Enter Password:
+                    </div>
+                    <div class="col-lg-6 col-sm-6">
+                        <input [(ngModel)]="password" [ngModelOptions]="{standalone: true}" type="password" autocomplete="password" class="form-control">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                        Confirm Password:
+                    </div>
+                    <div class="col-lg-6 col-sm-6">
+                        <input [(ngModel)]="cnfPassword" [ngModelOptions]="{standalone: true}" type="password" autocomplete="password" class="form-control">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                        Select User Type:
+                    </div>
+                    <div class="col-lg-6 col-sm-6">
+                        <input [(ngModel)]="usertype" [ngModelOptions]="{standalone: true}" type="radio" name="usertype" value="doctor"> Doctor
+                        <input [(ngModel)]="usertype" [ngModelOptions]="{standalone: true}" type="radio" name="usertype" value="patient"> Patient
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                    </div>
+                    <div class="col-lg-6 col-sm-6">
+                        <button (click)="RegisterUser()" class="btn btn-sm btn-success">Register</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
