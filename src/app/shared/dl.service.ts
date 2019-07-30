@@ -12,6 +12,23 @@ export class DLService {
         this.apiurl = this.apiurl + "/api/DanpheTelemedicine";
     }
 
+    /**
+     * Get Clinical
+     */
+    //get uploaded document by document id
+    public GetDocument(docid) {
+        try {
+            return this.httpClient.get(this.apiurl + "?reqType=get-document&documentid=" + docid, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
+
+
+    /**
+     * POST Clinical
+     */
+    //upload file
     UploadFile(sessionid, senderid, filedata) {
 
         const uploadReq = new HttpRequest('POST', this.apiurl + `/uploadfile?sessionid=` + sessionid + `&senderid=` + senderid, filedata, {

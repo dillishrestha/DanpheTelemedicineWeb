@@ -25,11 +25,13 @@ export class ClinicalComponent {
     public plans: string[] = new Array<string>();
     public order: string;
     public orders: string[] = new Array<string>();
-    fileuploadprogress: number;
-    fileUploadMessage: string;
+    public fileuploadprogress: number;
+    public fileUploadMessage: string;
+    public sessionDocList = new Array<any>();
 
 
-    constructor(private blService: BLService) {
+    constructor(private blService: BLService,
+        private globalService: GlobalService) {
 
     }
 
@@ -75,15 +77,14 @@ export class ClinicalComponent {
     }
 
     /**
-     * Upload File
+     * database call methods
      */
 
+    /*** Upload File ***/
     UploadFile(files) {
         if (files.length === 0)
             return;
-
         const formData = new FormData();
-
         for (let file of files) {
             if (file.size > 10000000) {
                 alert("File must be less than 10MB");
@@ -101,7 +102,7 @@ export class ClinicalComponent {
                     if (res.Status == 'OK') {
                         var data = res.Results;
                         //send received data to other user
-                        //this.sessionDocList.push(data);
+                        this.sessionDocList.push(data);
                         console.log(data);
                         this.fileUploadMessage = "Upload Successful."
                     } else {
@@ -113,7 +114,16 @@ export class ClinicalComponent {
                 }
             });
     }
-
+    public GetDocument(docid) {
+        this.blService.GetDocument(docid)
+            .subscribe(resData => {
+                var res = JSON.parse(resData);
+                if (res.Status == 'OK') {
+                    var data = res.Results;
+                    this.globalService.DownloadDoc(data.FileName, data.FileByteArray);
+                }
+            });
+    }
     /**
      * UI methods
      */
