@@ -689,6 +689,7 @@ namespace DanpheTelemedicineApi.Controllers
             catch (Exception ex)
             {
                 responseData.Status = "Failed";
+                responseData.ErrorMessage = ex.Message;
             }
             return DanpheJSONConvert.SerializeObject(responseData);
         }
