@@ -38,6 +38,19 @@ export class VideoComponent implements OnInit {
         offerToReceiveAudio: true,
         offerToReceiveVideo: true
     };
+    private mediaConstraints = {
+        audio: true,
+        video: {
+            width: {
+                min: 300,
+                max: 640
+            },
+            height: {
+                min: 200,
+                max: 480
+            }
+        }
+    };
     public loggedUserName;
 
     public caller;
@@ -213,10 +226,8 @@ export class VideoComponent implements OnInit {
         // navigator.mediaDevices.enumerateDevices()
         //     .then(this.GotDevices.bind(this))
         //     .catch(this.HandleDeviceError.bind(this));
-        navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        }).then(this.GotLocalStream.bind(this))
+        navigator.mediaDevices.getUserMedia(this.mediaConstraints)
+            .then(this.GotLocalStream.bind(this))
             .then(this.GotDevices.bind(this))
             .catch(this.HandleDeviceError.bind(this));
     }

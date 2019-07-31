@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { SocketIOService } from '../services/socket.io.service';
 import * as moment from 'moment';
+import { GlobalService } from '../services/global.service';
 
 @Component({
   selector: 'message',
@@ -12,7 +13,9 @@ export class MessageComponent implements OnInit {
   public messages: Array<MessageModel> = new Array<MessageModel>();
   public loggedUserName;
 
-  constructor(private socketIOService: SocketIOService) {
+  constructor(private socketIOService: SocketIOService,
+    private changeDetector: ChangeDetectorRef,
+    private globalService: GlobalService) {
     this.loggedUserName = sessionStorage.getItem("username");
   }
 
@@ -38,6 +41,7 @@ export class MessageComponent implements OnInit {
     this.messages.push(msg);
     this.socketIOService.SendMessage(this.message, this.loggedUserName, this.caller);
     this.message = '';
+    this.ScrollToBottom('div-msg');
   }
 
   ngOnInit() {
@@ -48,14 +52,23 @@ export class MessageComponent implements OnInit {
     this.socketIOService
       .GetMessages()
       .subscribe(data => {
-        const currentTime = moment().format('hh:mm:ss a');
         var msg = new MessageModel();
         msg.Message = data.message;
         msg.Sender = data.fromname;
         msg.Type = "received";
         msg.Date = moment(new Date()).format('MMM DD h:mm A');
         this.messages.push(msg);
+        this.changeDetector.detectChanges();
+        this.ScrollToBottom('div-msg');
       });
+  }
+
+  ///Scroll to bottom => handling ui
+  public ScrollToBottom(id) {
+    this.changeDetector.detectChanges();
+    var div = document.getElementById(id);
+    div.scrollTop = div.clientHeight;
+    div.scrollTop = div.scrollHeight - div.scrollTop;
   }
 }
 

@@ -31,7 +31,7 @@ export class ClinicalComponent {
     public fileuploadprogress: number;
     public fileUploadMessage: string;
     public sessionDocList = new Array<any>();
-
+    public isChat = false;
 
     constructor(private blService: BLService,
         private globalService: GlobalService,
@@ -45,6 +45,7 @@ export class ClinicalComponent {
         }
         if (this.caller && this.userType) {
             setTimeout(() => {
+                this.isChat = true;
                 this.isVideoCall = true;
             }, 1000);
         } else {
@@ -58,6 +59,7 @@ export class ClinicalComponent {
      */
     CallBack(event) {
         this.isVideoCall = false;
+        this.isChat = false;
         this.changeDetector.detectChanges();
         location.reload();
     }
@@ -71,38 +73,54 @@ export class ClinicalComponent {
         }
         this.consults.push(this.consult);
         this.consult = '';
+        this.ScrollToBottom("div-consult");
     }
 
 
     Save(val) {
+        var id = '';
         if (val == 'Complain') {
             if (this.complain != "") {
                 this.complains.push(this.complain);
                 this.complain = '';
+                id = 'div-complain';
             }
         } else if (val == "Examination") {
             if (this.examination != '') {
                 this.examinations.push(this.examination);
                 this.examination = '';
+                id = 'div-examination';
             }
         } else if (val == "Assessment") {
             if (this.assessment != '') {
                 this.assessments.push(this.assessment);
                 this.assessment = '';
+                id = 'div-assessment';
             }
         } else if (val == "Plan") {
             if (this.plan != '') {
                 this.plans.push(this.plan);
                 this.plan = '';
+                id = 'div-plan';
             }
         } else if (val == "Orders") {
             if (this.order != '') {
                 this.orders.push(this.order);
                 this.order = '';
+                id = 'div-order';
             }
         }
+        if (id != '') {
+            this.ScrollToBottom(id);
+        }
     }
-
+    ///Scroll to bottom => handling ui
+    public ScrollToBottom(id) {
+        this.changeDetector.detectChanges();
+        var div = document.getElementById(id);
+        div.scrollTop = div.clientHeight;
+        div.scrollTop = div.scrollHeight - div.scrollTop;
+    }
     /**
      * database call methods
      */

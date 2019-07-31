@@ -28,7 +28,7 @@
                                     <button *ngIf="row.live" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
                                         <i class="fa fa-video-camera"></i>
                                     </button>
-                                    <button *ngIf="row.live" title="Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="Chat(row)">
+                                    <button hidden *ngIf="row.live" title="Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="Chat(row)">
                                         <i class="fa fa-comments"></i>
                                     </button>
                                     <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="LoadOldChat(row)">
@@ -63,10 +63,10 @@
         </div>
     </div>
     <div class="col-lg-9 col-sm-12">
-        <div class="row" style="margin: 0px;" *ngIf="isShowChat">
+        <div class="row" style="margin: 0px;" *ngIf="isShowChat" style="height: 85vh; overflow: auto;">
             <span (click)="CloseChat()" class="popup-close chat-close">&times;</span>
-            <div class="row" style="margin: 0px; padding-left: 20px; width: 100%; height: 85vh; overflow: auto;">
-                <div class="row" *ngFor="let m of messages" style="width: 100%; max-height: 0px; margin-bottom: 2px;">
+            <div class="row" style="margin: 0px; padding-left: 20px; width: 100%; height: fit-content;">
+                <div class="row" *ngFor="let m of messages" style="width: 100%; margin-bottom: 2px;">
                     <div class="sent-message" *ngIf="m.Type == 'sent'">
                         {{m.Message}}
                         <br>
@@ -88,7 +88,7 @@
             </div>
         </div>
         <div class="row no-margin" *ngIf="isChat">
-            <message [caller]="caller" (callback)="CallBack($event)"></message>
+            <message style="width: 100%" [caller]="caller" (callback)="CallBack($event)"></message>
         </div>
     </div>
 </div>

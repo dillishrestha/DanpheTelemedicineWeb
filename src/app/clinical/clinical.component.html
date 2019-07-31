@@ -22,7 +22,7 @@
                                         <button class="btn btn-primary btn-sm" (click)="ConsultRequest()" style="margin: 2px;">
                                             Request<i class="fa fa-reply"></i></button>
                                     </div>
-                                    <div>
+                                    <div style="overflow: auto; height: 59px;" id="div-consult">
                                         <ul id="ul-consult">
                                             <li *ngFor="let row of consults">
                                                 {{ row }}
@@ -36,13 +36,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="row no-margin" *ngIf="isChat" style="height: 40vh;">
+            <message style="width: 100%; height: 100%;" [caller]="caller" (callback)="CallBack($event)"></message>
+        </div>
     </div>
     <div class="col-lg-10 col-sm-10">
         <div class="row" style="height: 100%;">
             <div class="col-lg-7 col-sm-12">
                 <!--video/chat-->
-                <div *ngIf="!isVideoCall">Loading Wait....</div>
-                <video-call *ngIf="isVideoCall" [userType]="userType" [caller]="caller" (callback)="CallBack($event)">Loading</video-call>
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12">
+                        <div *ngIf="!isVideoCall">Loading Wait....</div>
+                        <video-call *ngIf="isVideoCall" [userType]="userType" [caller]="caller" (callback)="CallBack($event)">Loading</video-call>
+                    </div>
+                </div>
             </div>
 
             <div class="col-lg-5 col-sm-12">
@@ -93,7 +101,7 @@
                                                         class="fa fa-trash-o"></i>
                                                     Delete</button>
                                             </div>
-                                            <div>
+                                            <div style="height: 170px; overflow: auto;" id="div-complain">
                                                 <ul id="ul-complain">
                                                     <li *ngFor="let row of complains">
                                                         {{ row }}
@@ -116,7 +124,7 @@
                                                         class="fa fa-trash-o"></i>
                                                     Delete</button>
                                             </div>
-                                            <div>
+                                            <div style="height: 170px; overflow: auto;" id="div-examination">
                                                 <ul id="ul-examination">
                                                     <li *ngFor="let row of examinations">
                                                         {{ row }}
@@ -138,7 +146,7 @@
                                                         class="fa fa-trash-o"></i>
                                                     Delete</button>
                                             </div>
-                                            <div>
+                                            <div style="height: 170px; overflow: auto;" id="div-assessment">
                                                 <ul id="ul-assessment">
                                                     <li *ngFor="let row of assessments">
                                                         {{ row }}
@@ -160,7 +168,7 @@
                                                         class="fa fa-trash-o"></i>
                                                     Delete</button>
                                             </div>
-                                            <div>
+                                            <div style="height: 170px; overflow: auto;" id="div-plan">
                                                 <ul id="ul-plan">
                                                     <li *ngFor="let row of plans">
                                                         {{ row }}
@@ -182,7 +190,7 @@
                                                         class="fa fa-trash-o"></i>
                                                     Delete</button>
                                             </div>
-                                            <div>
+                                            <div style="height: 170px; overflow: auto;" id="div-order">
                                                 <ul id="ul-order">
                                                     <li *ngFor="let row of orders">
                                                         {{ row }}
