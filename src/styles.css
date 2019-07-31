@@ -2,15 +2,16 @@
 
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
-/*
+/********************************************
 * General
-*/
+*********************************************/
 
 body {
     background-color: #d3d3d3 !important;
     font-family: "Open Sans", sans-serif;
     margin: 0px;
     height: 95vh;
+    overflow: auto;
 }
 
 ng-component {
@@ -23,6 +24,28 @@ ng-component {
 
 .no-padding {
     padding: 0px;
+}
+
+
+/***************************
+* Custon scrollbar
+****************************/
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+ ::-webkit-scrollbar-track {
+    background: #d8d8d8;
+}
+
+ ::-webkit-scrollbar-thumb {
+    background: #918f8f;
+    border-radius: 10px;
+}
+
+ ::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 

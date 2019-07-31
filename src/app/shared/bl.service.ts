@@ -66,6 +66,16 @@ export class BLService {
             throw ex;
         }
     }
+    //get old chat
+    public GetOldChat(useridlist) {
+        try {
+            return this.dlservice.GetOldChat(useridlist)
+                .pipe(map((res: any) => JSON.parse(res)),
+                    catchError(this.handleError));
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
     /*****************************
      * Clinical GET

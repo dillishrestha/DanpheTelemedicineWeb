@@ -4,6 +4,12 @@ export class GlobalService {
   public loggedUserInfo: any;
   public callType: string;
   public caller: any;
+  public messgaes = new Array<{
+    Message: string,
+    Type: string,
+    Sender: string,
+    Date: string
+  }>();;
   constructor() {
 
   }

@@ -49,6 +49,14 @@ export class DLService {
             throw ex;
         }
     }
+    //get old chat
+    public GetOldChat(useridlist) {
+        try {
+            return this.httpClient.get(this.apiurl + "?reqType=get-old-chat&useridlist=" + useridlist, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
     /*****************************
      * Clinical GET

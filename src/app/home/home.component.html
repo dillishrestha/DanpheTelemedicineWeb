@@ -15,7 +15,8 @@
                 <div class="tab-pane fade show active" style="height:100%;" id="nav-contacts" role="tabpanel" aria-labelledby="nav-contacts-tab">
                     <div class="col-md-12 no-padding table-responsive" style="margin: 0px;height: 100%;">
                         <h4 style="text-align: center;">Contacts</h4>
-                        <button (click)="ShowAddContact()" class="btn btn-sm btn-success btn-add-contact"><i class="fa fa-plus"></i></button>
+                        <button (click)="ShowAddContact()" class="btn btn-sm btn-success btn-add-contact"><i
+                                class="fa fa-plus"></i></button>
                         <table id="tbl-user-contacts" class="table" width="100%">
                             <tr style="text-align: center;">
                                 <th>UserName</th>
@@ -27,11 +28,11 @@
                                     <button *ngIf="row.live" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
                                         <i class="fa fa-video-camera"></i>
                                     </button>
-                                    <button hidden title="Audio Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="UserVideoCall(row.id)">
-                                        <i class="fa fa-phone"></i>
+                                    <button *ngIf="row.live" title="Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="Chat(row)">
+                                        <i class="fa fa-comments"></i>
                                     </button>
-                                    <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="ChatHistory(row)">
-                                            <i class="fa fa-history"></i>
+                                    <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="LoadOldChat(row)">
+                                        <i class="fa fa-history"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -61,7 +62,35 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-9 col-sm-12"></div>
+    <div class="col-lg-9 col-sm-12">
+        <div class="row" style="margin: 0px;" *ngIf="isShowChat">
+            <span (click)="CloseChat()" class="popup-close chat-close">&times;</span>
+            <div class="row" style="margin: 0px; padding-left: 20px; width: 100%; height: 85vh; overflow: auto;">
+                <div class="row" *ngFor="let m of messages" style="width: 100%; max-height: 0px; margin-bottom: 2px;">
+                    <div class="sent-message" *ngIf="m.Type == 'sent'">
+                        {{m.Message}}
+                        <br>
+                        <span style="font-size: 10px;color: gray;">
+                            <b style="color:black;">{{m.Sender}}</b> {{m.Date}}
+                        </span>
+                        <span style="padding-left: 5px;" id="checkmark-3" title="Received">
+                            <i class="fa fa-check"></i>
+                        </span>
+                    </div>
+                    <div class="received-message" *ngIf="m.Type == 'received'">
+                        {{m.Message}}
+                        <br>
+                        <span style="font-size: 10px;color: gray;">
+                            <b style="color:black;">{{m.Sender}}</b> {{m.Date}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row no-margin" *ngIf="isChat">
+            <message [caller]="caller" (callback)="CallBack($event)"></message>
+        </div>
+    </div>
 </div>
 
 
@@ -82,11 +111,7 @@
             </tr>
         </table>
     </div>
-    <div class="col-md-10" *ngIf="isVideoCallAccepted">
-        <video-call [userType]="userType" [caller]="caller" (callback)="CallBack($event)">Loading</video-call>
-    </div>
-    <div class="col-md-10" *ngIf="isChat">
-        <message [caller]="caller" (callback)="CallBack($event)"></message>
+    <div class="col-md-10">
     </div>
 </div>
 

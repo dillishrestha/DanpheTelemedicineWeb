@@ -37,3 +37,41 @@ a.custom-tabs:active {
     top: 0px;
     right: 0px;
 }
+
+
+/**
+*Chat
+*/
+
+.sent-message {
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 3px;
+    word-break: break-word;
+    color: black;
+    margin: 0px 0px 0px 15px;
+    background-color: rgb(120, 224, 143);
+    width: 100%;
+    text-align: right;
+    height: fit-content;
+}
+
+.received-message {
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 3px;
+    word-break: break-word;
+    color: black;
+    margin: 0px 15px 0px 0px;
+    background-color: rgb(130, 204, 221);
+    width: 100%;
+    text-align: left;
+    height: fit-content;
+}
+
+.chat-close {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 40px !important;
+}

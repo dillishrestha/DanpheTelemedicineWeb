@@ -20,7 +20,21 @@ export class HomeComponent implements OnInit {
     public userContacts: any;
     public isAddContact = false;
     public userList: any;
-    public contactListTodispaly = new Array<{ username: string, id: number, sessionid: string, live: boolean, busy: boolean }>();
+    public contactListTodispaly = new Array<{
+        username: string,
+        id: number,
+        sessionid: string,
+        live: boolean,
+        busy: boolean
+    }>();
+    public messages = new Array<{
+        Message: string,
+        Type: string,
+        Sender: string,
+        Date: string
+    }>();
+    public isShowChat = false;
+    public caller: any;
 
     constructor(
         private router: Router,
@@ -62,7 +76,11 @@ export class HomeComponent implements OnInit {
         this.OnChatRequest();
     }
 
-    AddUser() {
+    /*****************************************************************
+     * Section Common
+     *****************************************************************/
+    //Add User in socket
+    private AddUser() {
         this.socketIOService.SetUserName(this.loggedUserName)
             .subscribe(data => {
                 if (data.username) {
@@ -70,15 +88,19 @@ export class HomeComponent implements OnInit {
                 }
             })
     }
-    GetLiveUsers() {
+
+    // When user added in socket get it in live user list
+    private GetLiveUsers() {
         this.socketIOService
             .GetConnectedUsers()
             .subscribe(data => {
                 this.GotLiveUsers(data);
             });
     }
-    GotLiveUsers(data) {
+    //handling busy users and contact list to display
+    private GotLiveUsers(data) {
         var users = data.filter(a => a.username != this.loggedUserName);
+        //below if for handling busy users
         if (this.liveUserList.length > 0) {
             var count = 0;
             for (var i in users) {
@@ -95,12 +117,15 @@ export class HomeComponent implements OnInit {
             this.socketIOService.connectedusers = users;
             this.liveUserList = users;
         }
+        //below if for handling user list to display on ui
         if (this.userContacts) {
             if (this.userContacts.length > 0) {
                 for (let i = 0; i < this.userContacts.length; i++) {
                     var live = false;
                     var busy = false;
                     var sessionid = "";
+                    //checking live user is in current user contact list 
+                    //if yes then show video call button
                     if (this.liveUserList.length > 0) {
                         var liveusr = this.liveUserList.find(a => a.username == this.userContacts[i].ContactName);
                         if (liveusr.id) {
@@ -110,6 +135,8 @@ export class HomeComponent implements OnInit {
                         }
                     }
                     var usr = this.contactListTodispaly.find(a => a.username == this.userContacts[i].ContactName);
+                    //if contact user is not in display data then add it
+                    //else update his status
                     if (usr == undefined) {
                         this.contactListTodispaly.push({
                             username: this.userContacts[i].ContactName,
@@ -127,47 +154,9 @@ export class HomeComponent implements OnInit {
             }
         }
     }
-    OnChatRequest() {
-        this.socketIOService
-            .OnChatRequest()
-            .subscribe(data => {
-                if (data) {
-                    this.isChat = true;
-                    this.globalService.caller = data;
-                }
-            });
-    }
 
-    Chat(callee) {
-        this.isChat = true;
-        var calee = this.liveUserList.find(a => a.username == callee.username);
-        this.globalService.caller = calee.id;
-        this.socketIOService.SendChatRequest(calee.id);
-    }
-
-    OnVideoCallRequest() {
-        this.socketIOService
-            .OnVideoCallRequest()
-            .subscribe(data => {
-                this.callingInfo.name = data.fromname;
-                this.callingInfo.content = "Calling....";
-                this.callingInfo.type = "receiver";
-                this.isVideoCall = true;
-            });
-    }
-    OnVideoCallAccepted() {
-        this.socketIOService
-            .OnVideoCallAccepted()
-            .subscribe(data => {
-                var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
-                this.globalService.callType = 'dialer';
-                this.globalService.caller = calee.id;
-                this.router.navigate(['/Clinical']);
-                this.socketIOService.BusyNow();
-                this.Close();
-            });
-    }
-    GetBusyUsers() {
+    //when user set to busy detect it as busy
+    private GetBusyUsers() {
         this.socketIOService
             .GetBusyUsers()
             .subscribe(data => {
@@ -180,7 +169,79 @@ export class HomeComponent implements OnInit {
                 });
             })
     }
-    OnVideoCallRejected() {
+
+    //show add contact popup
+    public ShowAddContact() {
+        this.isAddContact = true;
+    }
+    //close add contact popup
+    public CloseAddContact() {
+        this.isAddContact = false;
+    }
+
+    /*****************************************************************
+     * Section Chat
+     *****************************************************************/
+    private OnChatRequest() {
+        this.socketIOService
+            .OnChatRequest()
+            .subscribe(data => {
+                if (data) {
+                    this.isChat = true;
+                    this.globalService.caller = data;
+                    this.caller = data;
+                }
+            });
+    }
+
+    public Chat(callee) {
+        this.isChat = true;
+        var calee = this.liveUserList.find(a => a.username == callee.username);
+        this.globalService.caller = calee.id;
+        this.caller = calee.id;
+        this.socketIOService.SendChatRequest(calee.id);
+    }
+
+    //get and show old messages
+    public LoadOldChat(row) {
+        this.isShowChat = true;
+        this.GetOldChat(row.id);
+    }
+    //hide message in ui
+    public CloseChat() {
+        this.isShowChat = false;
+    }
+
+    /*****************************************************************
+     * Section Video
+     *****************************************************************/
+    //after receiving video call request show video call popup with accept or reject button
+    private OnVideoCallRequest() {
+        this.socketIOService
+            .OnVideoCallRequest()
+            .subscribe(data => {
+                this.callingInfo.name = data.fromname;
+                this.callingInfo.content = "Calling....";
+                this.callingInfo.type = "receiver";
+                this.isVideoCall = true;
+            });
+    }
+    //after video call accepted by other user add to busy user and navigate to clinical page
+    //clinical page includes video call as well as chat
+    private OnVideoCallAccepted() {
+        this.socketIOService
+            .OnVideoCallAccepted()
+            .subscribe(data => {
+                var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
+                this.globalService.callType = 'dialer';
+                this.globalService.caller = calee.id;
+                this.router.navigate(['/Clinical']);
+                this.socketIOService.BusyNow();
+                this.Close();
+            });
+    }
+    //if video call rejected by receiver then notify to caller
+    private OnVideoCallRejected() {
         this.socketIOService
             .OnVideoCallRejected()
             .subscribe(data => {
@@ -190,9 +251,10 @@ export class HomeComponent implements OnInit {
                 }, 1000);
             });
     }
-    VideoCall(callee) {
-        //this.router.navigate(['/Clinical']);
-        //return;
+    //caller calls to another user(reciver)
+    //here callee is receiver
+    public VideoCall(callee) {
+        //find callee in live user list if found then send call request
         var calee = this.liveUserList.find(a => a.username == callee.username);
         if (calee) {
             this.socketIOService.VideoCallRequest(this.loggedUserName, calee.id);
@@ -203,8 +265,8 @@ export class HomeComponent implements OnInit {
         this.callingInfo.type = "dialer";
         this.isVideoCall = true;
     }
-
-    AcceptVideoCall() {
+    //accept video call and notify to dialer that call is accepted
+    public AcceptVideoCall() {
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
             this.socketIOService.VideoCallAccepted(this.loggedUserName, calee.id);
@@ -215,41 +277,33 @@ export class HomeComponent implements OnInit {
         }
         this.Close();
     }
-
-    RejectVideoCall() {
+    //if video call request is rejected then notify to dialer that call is rejected
+    public RejectVideoCall() {
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
             this.socketIOService.VideoCallRejected(this.loggedUserName, calee.id);
         }
         this.Close();
     }
-    AudioCall() {
+    //close video call popup
+    public Close() {
+        this.isVideoCall = false;
+        this.changeDetector.detectChanges();
+    }
+
+    /*****************************************************************
+     * Section Audio
+     *****************************************************************/
+    public AudioCall() {
         this.isAudioCall = true;
     }
 
-    CallBack(event) {
-        this.isChat = false;
-        this.isVideoCall = false;
-        this.isAudioCall = false;
-        this.changeDetector.detectChanges();
-        location.reload();
-    }
 
-    Close() {
-        this.isVideoCall = false;
-        this.changeDetector.detectChanges();
-    }
-
-    ShowAddContact() {
-        this.isAddContact = true;
-    }
-    CloseAddContact() {
-        this.isAddContact = false;
-    }
-    /**
-     * UI methods
-     */
-    SwitchTabContent(eleid) {
+    /*****************************************************************
+     * Section UI methods
+     *****************************************************************/
+    //for switching tab content
+    public SwitchTabContent(eleid) {
         var idlist = ['nav-contacts', 'nav-meeting'];
 
         idlist.forEach(id => {
@@ -265,11 +319,13 @@ export class HomeComponent implements OnInit {
             tabcontent.className = tabcontentclass;
         });
     }
-    /**
-     * Database methods
-     */
+
+
+    /*****************************************************************
+     * Section Database methods
+     *****************************************************************/
     //get current user contacts
-    public GetUserContacts() {
+    private GetUserContacts() {
         try {
             this.blService.GetUserContacts(this.globalService.loggedUserInfo.UserId)
                 .subscribe(res => {
@@ -284,12 +340,44 @@ export class HomeComponent implements OnInit {
         }
     }
     //get all users for add contacts
-    public GetUserList() {
+    private GetUserList() {
         try {
             this.blService.GetUserList()
                 .subscribe(res => {
                     if (res.Status == 'OK') {
                         this.userList = res.Results;
+                    } else {
+                        console.log(res.ErrorMessgae);
+                    }
+                })
+        } catch (ex) {
+            console.log(ex);
+        }
+    }
+    //get old chat between users
+    private GetOldChat(uid) {
+        try {
+            this.blService.GetOldChat(this.globalService.loggedUserInfo.UserId + "," + uid)
+                .subscribe(res => {
+                    if (res.Status == "OK") {
+                        var oldChat = res.Results;
+                        oldChat.chat.forEach(c => {
+                            var type = '';
+                            var sendername = '';
+                            if (this.loggedUserName == c.SenderName) {
+                                type = 'sent';
+                                sendername = 'Me';
+                            } else {
+                                type = "received";
+                                sendername = c.SenderName;
+                            }
+                            this.messages.push({
+                                Message: c.SentText,
+                                Type: type,
+                                Sender: sendername,
+                                Date: moment(c.SentTime).format('MMM DD h:mm A')
+                            });
+                        });
                     } else {
                         console.log(res.ErrorMessgae);
                     }

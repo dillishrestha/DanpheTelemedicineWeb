@@ -49,6 +49,7 @@
     background-color: rgb(120, 224, 143);
     width: 100%;
     text-align: right;
+    height: fit-content;
 }
 
 .received-message {
@@ -61,4 +62,5 @@
     background-color: rgb(130, 204, 221);
     width: 100%;
     text-align: left;
+    height: fit-content;
 }
