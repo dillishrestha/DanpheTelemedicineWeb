@@ -34,7 +34,7 @@ export class ClinicalComponent implements OnInit {
     public isChat = false;
     public showMsg = false;
     public boxMessage = '';
-    public remoteUserDetails = {username: '', role:''};
+    public remoteUserDetails = { username: '', role: '' };
 
     constructor(private blService: BLService,
         private globalService: GlobalService,
@@ -99,6 +99,7 @@ export class ClinicalComponent implements OnInit {
         this.isVideoCall = false;
         this.isChat = false;
         this.changeDetector.detectChanges();
+        this.CallEnded();
         location.reload();
     }
 
@@ -228,16 +229,30 @@ export class ClinicalComponent implements OnInit {
     //get other user details for display
     private GetRemoteUserDetails(userid) {
         this.blService.GetRemoteUserDetails(userid)
-          .subscribe(res => {
-            if (res.Status == 'OK') {
-              var data = res.Results;
-              if (data) {
-                  this.remoteUserDetails.username = data.UserName;
-                  this.remoteUserDetails.role = data.Role;
-              }
-            }
-          });
-      }
+            .subscribe(res => {
+                if (res.Status == 'OK') {
+                    var data = res.Results;
+                    if (data) {
+                        this.remoteUserDetails.username = data.UserName;
+                        this.remoteUserDetails.role = data.Role;
+                    }
+                }
+            });
+    }
+    //call ended
+    private CallEnded() {
+        var data = {
+            SessionId: this.globalService.sessionid,
+            EndTime: new Date()
+        };
+        this.blService.EndVideoCall(data)
+            .subscribe(res => {
+                if (res.Status == "OK") {
+                    
+                }
+            });
+    }
+
     /**
      * UI methods
      */

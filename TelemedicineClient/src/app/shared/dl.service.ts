@@ -112,6 +112,14 @@ export class DLService {
         });
         return this.httpClient.request(uploadReq);
     }
+    //video call ended
+    public EndVideoCall(data) {
+        try {
+            return this.httpClient.post(this.apiurl + "?reqType=end-video-call", data, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
     
     /*****************************

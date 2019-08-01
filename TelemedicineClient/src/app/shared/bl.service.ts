@@ -135,6 +135,16 @@ export class BLService {
     UploadFile(sessionid,senderid,filedata){
         return this.dlservice.UploadFile(sessionid,senderid,filedata);
     }
+    //end video call
+    public EndVideoCall(data) {
+        try {
+            var chat = JSON.stringify(data);
+            return this.dlservice.EndVideoCall(chat)
+                .pipe(map((res: any) => JSON.parse(res)));
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
     /*****************************
      * Main POST
