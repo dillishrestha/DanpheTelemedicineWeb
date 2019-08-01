@@ -208,6 +208,13 @@ Login
     height: fit-content!important;
 }
 
+.user-info {
+    position: fixed;
+    top: 5px;
+    right: 70px;
+    font-size: 20px;
+}
+
 
 /*------------------------------------------
  The Modal (background)

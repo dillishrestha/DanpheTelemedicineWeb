@@ -3,6 +3,9 @@
         <div id="logo" class="pull-left logo" style="height: 40px;">
             <img class="logo" style="height:100%; position:absolute;" src="../assets/images/logo.png" alt="DanpheTelemedicine" title="DanpheTelemedicine" />
         </div>
+        <div class="user-info" *ngIf="globalService.isUserLoggedin">
+            <b>{{globalService.loggedUserInfo.UserName}}</b>
+        </div>
         <button (click)="Logout()" id="btn-logout" *ngIf="globalService.isUserLoggedin" class="btn btn-danger btn-sm" style="position: fixed; top:5px; right:0px;">Logout</button>
         <button (click)="ShowPopUp()" id="btn-logout" *ngIf="!globalService.isUserLoggedin" class="btn btn-primary btn-sm" style="position: fixed; top:5px; right:0px;">Register</button>
     </div>
