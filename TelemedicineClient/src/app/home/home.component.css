@@ -74,4 +74,5 @@ a.custom-tabs:active {
     top: 10px;
     right: 25px;
     font-size: 40px !important;
+    z-index: 1;
 }

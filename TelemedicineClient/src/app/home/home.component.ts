@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit {
     }>();
     public isShowChat = false;
     public caller: any;
+    public callDetails: any;
 
     constructor(
         private router: Router,
@@ -375,8 +376,10 @@ export class HomeComponent implements OnInit {
             this.blService.GetOldChat(this.globalService.loggedUserInfo.UserId + "," + uid)
                 .subscribe(res => {
                     if (res.Status == "OK") {
-                        var oldChat = res.Results;
-                        oldChat.chat.forEach(c => {
+                        var data = res.Results;
+                        this.messages = [];
+                        this.callDetails = data.call;
+                        data.chat.forEach(c => {
                             var type = '';
                             var sendername = '';
                             if (this.loggedUserName == c.SenderName) {

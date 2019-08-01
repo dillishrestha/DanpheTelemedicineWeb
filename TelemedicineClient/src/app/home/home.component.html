@@ -42,7 +42,9 @@
                 <div class="tab-pane fade show" id="nav-meeting" role="tabpanel" aria-labelledby="nav-meetting-tab" style="height: 100%;">
                     <div class="col-md-12 no-padding table-responsive" style="height: 100%;">
                         <h4 style="text-align: center;">Meeting</h4>
-                        <table id="tbl-user-contacts" class="table" width="100%">
+                        <p>Meeting data not available..</p>
+                        <!--Remove this after meeting logic creation-->
+                        <table hidden id="tbl-user-contacts" class="table" width="100%">
                             <tr style="text-align: center;">
                                 <th>Meeting Id</th>
                                 <th>Created On</th>
@@ -65,7 +67,8 @@
     <div class="col-lg-9 col-sm-12">
         <div class="row" style="margin: 0px;" *ngIf="isShowChat" style="height: 85vh; overflow: auto;">
             <span (click)="CloseChat()" class="popup-close chat-close">&times;</span>
-            <div class="row" style="margin: 0px; padding-left: 20px; width: 100%; height: fit-content;">
+            <div class="col-lg-6" style="margin: 0px; padding-left: 20px; width: 100%; height: fit-content; text-align: center;">
+                <h5>Chat History</h5>
                 <div class="row" *ngFor="let m of messages" style="width: 100%; margin-bottom: 2px;">
                     <div class="sent-message" *ngIf="m.Type == 'sent'">
                         {{m.Message}}
@@ -86,6 +89,23 @@
                     </div>
                 </div>
             </div>
+            <div style="text-align: center;" class="col-lg-6">
+                <h5>Call Details</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of callDetails">
+                            <td>{{row.StartTime | date : 'MMM d, y, h:mm a'}}</td>
+                            <td>{{row.EndTime | date : 'MMM d, y, h:mm a'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="row no-margin" *ngIf="isChat">
             <message style="width: 100%" [caller]="caller" (callback)="CallBack($event)"></message>
@@ -93,32 +113,10 @@
     </div>
 </div>
 
-
-
-<div class="row" hidden>
-    <div class="col-lg-2">
-        <table>
-            <tr *ngFor="let u of liveUserList">
-                <td>
-                    {{u.username}}
-                </td>
-                <td>
-                    <button (click)="VideoCall(u)" *ngIf="(!isVideoCallAccepted || u.username==loggedUserName) && !u.busy" class="btn btn-success btn-sm">Video Call</button>
-                </td>
-                <td>
-                    <button (click)="Chat(u)" *ngIf="(!isChat || u.username==loggedUserName) && !u.busy" class="btn btn-success btn-sm">Chat</button>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="col-md-10">
-    </div>
-</div>
-
 <!-- Video Call Popup -->
 <div class="popup-box" *ngIf="isVideoCall">
     <div class="popup-content">
-        <span (click)="Close()" class="popup-close">&times;</span>
+        <span (click)="RejectVideoCall()" class="popup-close">&times;</span>
         <div class="popup-header">
             <h4>{{callingInfo.name}}</h4>
             <h5>{{callingInfo.content}}</h5>

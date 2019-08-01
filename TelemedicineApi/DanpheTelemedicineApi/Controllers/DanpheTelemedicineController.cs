@@ -77,11 +77,12 @@ namespace DanpheTelemedicineApi.Controllers
                                                 || (c.SessionOwnerId == user2id && c.UserId == user1id)
                                                 select c.SessionId).Distinct().ToList()
                                                 on st.SessionId equals si
+                                    orderby st.SessionTxnId descending
                                     select new
                                     {
                                         StartTime = st.CreatedOn,
                                         st.EndTime
-                                    }).ToList()
+                                    }).Take(10).ToList()
                         };
                         responseData.Results = res;
                     }
@@ -261,16 +262,16 @@ namespace DanpheTelemedicineApi.Controllers
                     }
                 }
                 #endregion
-               #region Get Consult requests
-               else if (reqType == "get-consult-request")
-               {
-                   var sessionlist = GetSessionIdList(dbContext, useridlist);
-                   var note = (from n in dbContext.ConsultRequest.AsEnumerable()
-                               join sl in sessionlist on n.SessionId equals sl
-                               select n).ToList();
-                   responseData.Results = note;
-               }
-               #endregion
+                #region Get Consult requests
+                else if (reqType == "get-consult-request")
+                {
+                    var sessionlist = GetSessionIdList(dbContext, useridlist);
+                    var note = (from n in dbContext.ConsultRequest.AsEnumerable()
+                                join sl in sessionlist on n.SessionId equals sl
+                                select n).ToList();
+                    responseData.Results = note;
+                }
+                #endregion
                 #region get session file
                 else if (reqType == "get-document-list")
                 {
@@ -634,17 +635,17 @@ namespace DanpheTelemedicineApi.Controllers
                 }
                 #endregion
                 #region save consult request
-               else if (reqType == "save-consult-request")
-               {
-                   ConsultRequestModel consult = DanpheJSONConvert.DeserializeObject<ConsultRequestModel>(str);
-                   if (consult != null)
-                   {
-                       dbContext.ConsultRequest.Add(consult);
-                       dbContext.SaveChanges();
-                       responseData.Status = "OK";
-                   }
-               }
-               #endregion
+                else if (reqType == "save-consult-request")
+                {
+                    ConsultRequestModel consult = DanpheJSONConvert.DeserializeObject<ConsultRequestModel>(str);
+                    if (consult != null)
+                    {
+                        dbContext.ConsultRequest.Add(consult);
+                        dbContext.SaveChanges();
+                        responseData.Status = "OK";
+                    }
+                }
+                #endregion
                 #region End Video Call
                 else if (reqType == "end-video-call")
                 {
