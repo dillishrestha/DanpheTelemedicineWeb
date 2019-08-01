@@ -19,6 +19,7 @@ export class MessageComponent implements OnInit {
     private globalService: GlobalService,
     private blService: BLService) {
     this.loggedUserName = sessionStorage.getItem("username");
+    this.GetOldChat(this.globalService.sessionUserDbId);
   }
 
   public caller;
@@ -42,7 +43,7 @@ export class MessageComponent implements OnInit {
 
     this.messages.push(msg);
     this.socketIOService.SendMessage(this.message, this.loggedUserName, this.caller);
-    
+
     var Data = {
       SessionId: this.globalService.sessionid,
       SenderId: this.globalService.loggedUserInfo.UserId,
@@ -86,16 +87,50 @@ export class MessageComponent implements OnInit {
   /*******************************
    * Database calls
    ******************************/
-    //save chat for maintin chat history
-    private SaveChat(data) {
-      this.blService.SaveChat(data)
+  //save chat for maintin chat history
+  private SaveChat(data) {
+    this.blService.SaveChat(data)
+      .subscribe(res => {
+        if (res.Status == 'OK') {
+          //var data = res.Results;
+          console.log("msg saved");
+        }
+      });
+  }
+  //get old chat between users
+  private GetOldChat(uid) {
+    try {
+      this.blService.GetOldChat(this.globalService.loggedUserInfo.UserId + "," + uid)
         .subscribe(res => {
-          if (res.Status == 'OK') {
-            //var data = res.Results;
-            console.log("msg saved");
+          if (res.Status == "OK") {
+            var data = res.Results;
+            this.messages = [];
+            data.chat.forEach(c => {
+              var type = '';
+              var sendername = '';
+              if (this.loggedUserName == c.SenderName) {
+                type = 'sent';
+                sendername = 'Me';
+              } else {
+                type = "received";
+                sendername = c.SenderName;
+              }
+              this.messages.push({
+                Message: c.SentText,
+                Type: type,
+                Sender: sendername,
+                Date: moment(c.SentTime).format('MMM DD h:mm A')
+              });
+            });
+            this.ScrollToBottom('div-msg');
+          } else {
+            console.log(res.ErrorMessgae);
           }
-        });
+        })
+    } catch (ex) {
+      console.log(ex);
     }
+  }
 }
 
 class MessageModel {
