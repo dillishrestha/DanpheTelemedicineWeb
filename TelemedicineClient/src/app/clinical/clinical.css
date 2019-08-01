@@ -34,3 +34,58 @@ a.custom-tabs:hover,
 a.custom-tabs:active {
     color: white;
 }
+
+
+/**
+* Message box
+*/
+
+.msg-box {
+    position: fixed;
+    z-index: 1;
+    padding: 0px;
+    right: 0;
+    bottom: 50px;
+    width: 300px;
+    height: 60px;
+    overflow: auto;
+}
+
+.msg-box-content {
+    background-color: green;
+    height: 90%;
+    color: white;
+    margin: auto;
+    padding: 0px;
+    border: 1px solid #888;
+    border-radius: 10px;
+}
+
+.msg-box-close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.msg-box-close:hover,
+.msg-box-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+/**
+* Download link
+*/
+
+.download-link {
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.download-link:hover,
+.download-link:focus {
+    color: blue;
+}

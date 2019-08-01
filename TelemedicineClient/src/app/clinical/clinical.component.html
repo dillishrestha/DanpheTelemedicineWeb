@@ -204,27 +204,34 @@
                         </div>
                     </div>
                 </div>
-                <div class="row no-margin" style="height: 10%; width:100%; overflow: auto;" id="div-file">
+                <div class="row no-margin" style="height: 65px; width:100%; overflow: auto;" id="div-file">
                     <input hidden id="uploadfile" #file type="file" (change)="UploadFile(file.files)" />
                     <button onclick="document.getElementById('uploadfile').click();" class="btn btn-sm btn-success" style="position: absolute; right:10px;">
                         <i class="fa fa-upload"></i>Upload File</button>
-                    <span style="font-weight:bold;color:green;" *ngIf="fileuploadprogress > 0 && fileuploadprogress < 100">
+                    <!-- <span style="font-weight:bold;color:green;" *ngIf="fileuploadprogress > 0 && fileuploadprogress < 100">
                         Uploading... {{fileuploadprogress}}%
                     </span>
                     <span style="font-weight:bold;color:green;" *ngIf="fileUploadMessage">
                         {{fileUploadMessage}}
-                    </span>
+                    </span> -->
                     <div class="row no-margin" style="width: 100%;" *ngFor="let r of sessionDocList">
-                        <a (click)="GetDocument(r.SessionDocumentId)" class="download-link"><i
+                        <a (click)="GetDocument(r.SessionDocumentId)" title="Click to download" class="download-link"><i
                                 class="fa fa-download"></i>{{r.FileName}}</a>
                     </div>
                 </div>
                 <div class="row no-margin" style="height: 10%; overflow: auto;">
                     <div style="height: 100%;text-align: center;background-color: #76797b;" class="col-md-12 col-sm-12 no-padding">
-
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div id="msg-box" class="msg-box" *ngIf="showMsg">
+    <div class="msg-box-content">
+        <span (click)="CloseMsgBox()" class="msg-box-close">&times;</span>
+        <p>{{boxMessage}}</p>
     </div>
 </div>

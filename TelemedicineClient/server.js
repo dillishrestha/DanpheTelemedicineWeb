@@ -111,6 +111,9 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('send-document', (data) => {
+        socket.broadcast.to(data.toid).emit('get-document', data);
+    });
     /***
      * Section Video call
      * following requests are used for video call

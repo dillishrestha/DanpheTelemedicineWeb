@@ -90,6 +90,16 @@ export class BLService {
             throw ex;
         }
     }
+    //get document list by session users
+    public GetDocumnetList(useridlist) {
+        try {
+            return this.dlservice.GetDocumnetList(useridlist)
+                .pipe(map((res: any) => JSON.parse(res)),
+                    catchError(this.handleError));
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
      
     /*****************************************************************

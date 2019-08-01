@@ -69,6 +69,14 @@ export class DLService {
             throw ex;
         }
     }
+    //get document list by users
+    public GetDocumnetList(useridlist) {
+        try {
+            return this.httpClient.get(this.apiurl + "?reqType=get-document-list&useridlist=" + useridlist, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
 
     /*****************************************************************
@@ -110,7 +118,7 @@ export class DLService {
             throw ex;
         }
     }
-    
+
     /*****************************
      * Message POST
      *****************************/

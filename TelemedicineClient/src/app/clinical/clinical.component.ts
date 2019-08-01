@@ -10,7 +10,7 @@ import { HttpEventType } from '@angular/common/http';
     templateUrl: './clinical.component.html',
     styleUrls: ['./clinical.css']
 })
-export class ClinicalComponent {
+export class ClinicalComponent implements OnInit {
 
     public isDoctor = true;
     public isVideoCall = false;
@@ -32,17 +32,21 @@ export class ClinicalComponent {
     public fileUploadMessage: string;
     public sessionDocList = new Array<any>();
     public isChat = false;
+    public showMsg = false;
+    public boxMessage = '';
 
     constructor(private blService: BLService,
         private globalService: GlobalService,
         private changeDetector: ChangeDetectorRef,
-        private router: Router) {
+        private router: Router,
+        private socketIOService: SocketIOService) {
         if (this.globalService.callType) {
             this.userType = this.globalService.callType;
         }
         if (this.globalService.caller) {
             this.caller = this.globalService.caller;
         }
+        this.GetDocumnetList(this.globalService.loggedUserInfo.UserId + "," + this.globalService.sessionUserDbId)
         if (this.caller && this.userType) {
             setTimeout(() => {
                 this.isChat = true;
@@ -53,7 +57,38 @@ export class ClinicalComponent {
             this.router.navigate(['/']);
         }
     }
-
+    ngOnInit(){
+        this.OnDocumentReceived();
+    }
+    private SendDocument(d){
+        var data={
+            toid: this.caller,
+            fromname: this.globalService.loggedUserInfo.UserName,
+            documentid: d.SessionDocumentId,
+            filename: d.FileName
+        };
+        this.socketIOService.SendDocument(data);
+    }
+    private OnDocumentReceived(){
+        this.socketIOService.GetDocument()
+        .subscribe(data=>{
+            this.sessionDocList.push({
+                SessionDocumentId: data.documentid,
+                FileName: data.filename
+            });
+            this.ScrollToBottom("div-file");
+        });
+    }
+    ShowMessage(msg){
+        this.boxMessage = msg;
+        this.showMsg = true;
+        setTimeout(() => {
+            this.showMsg = false;
+        }, 5000);
+    }
+    CloseMsgBox() {
+        this.showMsg = false;
+    }
     /**
      * Video Call Methods
      */
@@ -137,10 +172,12 @@ export class ClinicalComponent {
             }
             formData.append(file.name, file);
         }
-        this.blService.UploadFile('sessionid', '01', formData)
+        this.blService.UploadFile(this.globalService.sessionid, this.globalService.loggedUserInfo.UserId, formData)
             .subscribe(event => {
-                if (event.type === HttpEventType.UploadProgress)
+                if (event.type === HttpEventType.UploadProgress) {
                     this.fileuploadprogress = Math.round(100 * event.loaded / event.total);
+                    this.ShowMessage("Uploading....");
+                }
                 else if (event.type === HttpEventType.Response) {
                     var jsondata = event.body.toString();
                     var res = JSON.parse(jsondata);
@@ -148,8 +185,10 @@ export class ClinicalComponent {
                         var data = res.Results;
                         //send received data to other user
                         this.sessionDocList.push(data);
-                        console.log(data);
-                        this.fileUploadMessage = "Upload Successful."
+                        this.SendDocument(data);
+                        this.ShowMessage("Upload Successful.");
+                        this.fileUploadMessage = "Upload Successful.";
+                        this.ScrollToBottom("div-file");
                     } else {
                         this.fileUploadMessage = res.ErrorMessage;
                     }
@@ -159,6 +198,7 @@ export class ClinicalComponent {
                 }
             });
     }
+    //get document by document id
     public GetDocument(docid) {
         this.blService.GetDocument(docid)
             .subscribe(resData => {
@@ -166,6 +206,18 @@ export class ClinicalComponent {
                 if (res.Status == 'OK') {
                     var data = res.Results;
                     this.globalService.DownloadDoc(data.FileName, data.FileByteArray);
+                }
+            });
+    }
+    private GetDocumnetList(useridlist) {
+        this.blService.GetDocumnetList(useridlist)
+            .subscribe(res => {
+                if (res.Status == 'OK') {
+                    var data = res.Results;
+                    if (data.length > 0) {
+                        this.sessionDocList = data;
+                        this.ScrollToBottom("div-file");
+                    }
                 }
             });
     }

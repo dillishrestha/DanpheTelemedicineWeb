@@ -54,6 +54,17 @@ export class SocketIOService {
         });
     }
 
+    public SendDocument(data) {
+        this.socket.emit('send-document', data);
+    }
+
+    public GetDocument(){
+        return Observable.create((observer) => {
+            this.socket.on('get-document', (data) => {
+                observer.next(data);
+            });
+        });
+    }
     /***
      * Section Chat
      * following requests are used for Chat
