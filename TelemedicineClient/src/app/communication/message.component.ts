@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } fro
 import { SocketIOService } from '../services/socket.io.service';
 import * as moment from 'moment';
 import { GlobalService } from '../services/global.service';
+import { BLService } from '../shared/bl.service';
 
 @Component({
   selector: 'message',
@@ -15,7 +16,8 @@ export class MessageComponent implements OnInit {
 
   constructor(private socketIOService: SocketIOService,
     private changeDetector: ChangeDetectorRef,
-    private globalService: GlobalService) {
+    private globalService: GlobalService,
+    private blService: BLService) {
     this.loggedUserName = sessionStorage.getItem("username");
   }
 
@@ -40,6 +42,16 @@ export class MessageComponent implements OnInit {
 
     this.messages.push(msg);
     this.socketIOService.SendMessage(this.message, this.loggedUserName, this.caller);
+    
+    var Data = {
+      SessionId: this.globalService.sessionid,
+      SenderId: this.globalService.loggedUserInfo.UserId,
+      SentTime: new Date(),
+      SentText: this.message
+    };
+    //saving message in db
+    this.SaveChat(Data);
+
     this.message = '';
     this.ScrollToBottom('div-msg');
   }
@@ -70,6 +82,20 @@ export class MessageComponent implements OnInit {
     div.scrollTop = div.clientHeight;
     div.scrollTop = div.scrollHeight - div.scrollTop;
   }
+
+  /*******************************
+   * Database calls
+   ******************************/
+    //save chat for maintin chat history
+    private SaveChat(data) {
+      this.blService.SaveChat(data)
+        .subscribe(res => {
+          if (res.Status == 'OK') {
+            //var data = res.Results;
+            console.log("msg saved");
+          }
+        });
+    }
 }
 
 class MessageModel {

@@ -413,7 +413,7 @@ export class HomeComponent implements OnInit {
             .subscribe(res => {
                 if (res.Status == 'OK') {
                     //var data = res.Results;
-                    console.log("session saved");
+                    //console.log("session saved");
                 }
             });
     }

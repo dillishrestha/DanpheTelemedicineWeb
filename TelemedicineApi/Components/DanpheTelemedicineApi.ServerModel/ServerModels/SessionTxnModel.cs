@@ -15,7 +15,7 @@ namespace DanpheTelemedicineApi.ServerModel
         public string SessionDisplayId { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedOn { get; set; }
-        public int? CallingTo { get; set; }
+        public int CallingTo { get; set; }
         public string EndTime { get; set; }
     }
 }

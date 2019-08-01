@@ -510,10 +510,13 @@ namespace DanpheTelemedicineApi.Controllers
                     {
                         dbContext.SessionTxns.Add(sessionTxn);
                         dbContext.SaveChanges();
+
                         SessionUserTxnModel sessionUserTxn = new SessionUserTxnModel();
                         sessionUserTxn.SessionId = sessionTxn.SessionId;
                         sessionUserTxn.SessionOwnerId = sessionTxn.CreatedBy;
                         sessionUserTxn.OwnerJoinTime = sessionTxn.CreatedOn;
+                        sessionUserTxn.UserId = sessionTxn.CallingTo;
+                        sessionUserTxn.UserJoinTime = sessionTxn.CreatedOn;
                         dbContext.SessionUserTxns.Add(sessionUserTxn);
                         dbContext.SaveChanges();
                         responseData.Status = "OK";
