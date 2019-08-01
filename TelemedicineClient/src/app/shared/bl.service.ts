@@ -100,7 +100,16 @@ export class BLService {
             throw ex;
         }
     }
-
+    //get remote user details for display by user id
+    public GetRemoteUserDetails(userid) {
+        try {
+            return this.dlservice.GetRemoteUserDetails(userid)
+                .pipe(map((res: any) => JSON.parse(res)),
+                    catchError(this.handleError));
+        } catch (ex) {
+            throw ex;
+        }
+    }
      
     /*****************************************************************
      * START POST

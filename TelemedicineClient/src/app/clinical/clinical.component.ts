@@ -34,6 +34,7 @@ export class ClinicalComponent implements OnInit {
     public isChat = false;
     public showMsg = false;
     public boxMessage = '';
+    public remoteUserDetails = {username: '', role:''};
 
     constructor(private blService: BLService,
         private globalService: GlobalService,
@@ -46,7 +47,9 @@ export class ClinicalComponent implements OnInit {
         if (this.globalService.caller) {
             this.caller = this.globalService.caller;
         }
-        this.GetDocumnetList(this.globalService.loggedUserInfo.UserId + "," + this.globalService.sessionUserDbId)
+        this.GetDocumnetList(this.globalService.loggedUserInfo.UserId + "," + this.globalService.sessionUserDbId);
+        this.GetRemoteUserDetails(this.globalService.sessionUserDbId);
+
         if (this.caller && this.userType) {
             setTimeout(() => {
                 this.isChat = true;
@@ -57,11 +60,11 @@ export class ClinicalComponent implements OnInit {
             this.router.navigate(['/']);
         }
     }
-    ngOnInit(){
+    ngOnInit() {
         this.OnDocumentReceived();
     }
-    private SendDocument(d){
-        var data={
+    private SendDocument(d) {
+        var data = {
             toid: this.caller,
             fromname: this.globalService.loggedUserInfo.UserName,
             documentid: d.SessionDocumentId,
@@ -69,17 +72,17 @@ export class ClinicalComponent implements OnInit {
         };
         this.socketIOService.SendDocument(data);
     }
-    private OnDocumentReceived(){
+    private OnDocumentReceived() {
         this.socketIOService.GetDocument()
-        .subscribe(data=>{
-            this.sessionDocList.push({
-                SessionDocumentId: data.documentid,
-                FileName: data.filename
+            .subscribe(data => {
+                this.sessionDocList.push({
+                    SessionDocumentId: data.documentid,
+                    FileName: data.filename
+                });
+                this.ScrollToBottom("div-file");
             });
-            this.ScrollToBottom("div-file");
-        });
     }
-    ShowMessage(msg){
+    ShowMessage(msg) {
         this.boxMessage = msg;
         this.showMsg = true;
         setTimeout(() => {
@@ -209,6 +212,7 @@ export class ClinicalComponent implements OnInit {
                 }
             });
     }
+    //get document list
     private GetDocumnetList(useridlist) {
         this.blService.GetDocumnetList(useridlist)
             .subscribe(res => {
@@ -221,6 +225,19 @@ export class ClinicalComponent implements OnInit {
                 }
             });
     }
+    //get other user details for display
+    private GetRemoteUserDetails(userid) {
+        this.blService.GetRemoteUserDetails(userid)
+          .subscribe(res => {
+            if (res.Status == 'OK') {
+              var data = res.Results;
+              if (data) {
+                  this.remoteUserDetails.username = data.UserName;
+                  this.remoteUserDetails.role = data.Role;
+              }
+            }
+          });
+      }
     /**
      * UI methods
      */

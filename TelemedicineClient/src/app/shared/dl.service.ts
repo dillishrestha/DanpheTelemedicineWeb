@@ -77,7 +77,14 @@ export class DLService {
             throw ex;
         }
     }
-
+    //get remote user details for disply
+    public GetRemoteUserDetails(userid) {
+        try {
+            return this.httpClient.get(this.apiurl + "?reqType=get-user-details&userid=" + userid, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
 
     /*****************************************************************
      * START POST

@@ -331,7 +331,7 @@ namespace DanpheTelemedicineApi.Controllers
                 }
                 #endregion
                 #region get user details
-                else if (reqType == "get-user")
+                else if (reqType == "get-user-details")
                 {
                     var user = (from u in dbContext.User
                                 where u.UserId == userid
