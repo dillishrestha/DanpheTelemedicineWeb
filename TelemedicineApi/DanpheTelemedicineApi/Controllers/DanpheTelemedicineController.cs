@@ -498,7 +498,7 @@ namespace DanpheTelemedicineApi.Controllers
                         dbContext.ConferenceChat.Add(conferenceChat);
                         dbContext.SaveChanges();
                         responseData.Results = conferenceChat;
-                        responseData.Results = "OK";
+                        responseData.Status = "OK";
                     }
                 }
                 #endregion
@@ -516,7 +516,7 @@ namespace DanpheTelemedicineApi.Controllers
                         sessionUserTxn.OwnerJoinTime = sessionTxn.CreatedOn;
                         dbContext.SessionUserTxns.Add(sessionUserTxn);
                         dbContext.SaveChanges();
-                        responseData.Results = "OK";
+                        responseData.Status = "OK";
                     }
                 }
                 #endregion
@@ -546,7 +546,7 @@ namespace DanpheTelemedicineApi.Controllers
                         }
                     }
                     responseData.Results = sessionUserTxn;
-                    responseData.Results = "OK";
+                    responseData.Status = "OK";
                 }
                 #endregion
                 #region Save session chat in p2p connection
@@ -566,7 +566,7 @@ namespace DanpheTelemedicineApi.Controllers
                         dbContext.SessionChat.Add(sessionChat);
                         dbContext.SaveChanges();
                         responseData.Results = sessionChat;
-                        responseData.Results = "OK";
+                        responseData.Status = "OK";
                     }
                 }
                 #endregion
@@ -658,7 +658,7 @@ namespace DanpheTelemedicineApi.Controllers
                         dbContext.SaveChanges();
                     }
                     responseData.Results = es;
-                    responseData.Results = "OK";
+                    responseData.Status = "OK";
                 }
                 #endregion
                 else

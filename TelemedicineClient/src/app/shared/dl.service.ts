@@ -75,6 +75,18 @@ export class DLService {
      * START POST
      *****************************************************************/
     
+     /*****************************
+     * Home POST
+     *****************************/
+    //when user accepted call then add new session
+    public SaveNewSession(data) {
+        try {
+            return this.httpClient.post(this.apiurl + "?reqType=save-new-session", data, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
+
     /*****************************
      * Clinical POST
      *****************************/
@@ -94,6 +106,18 @@ export class DLService {
     public RegisterNewUser(user){
         try {
             return this.httpClient.post(this.apiurl + "?reqType=save-user", user, this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
+    
+    /*****************************
+     * Message POST
+     *****************************/
+    //save chat for maintain chat history
+    public SaveChat(data) {
+        try {
+            return this.httpClient.post(this.apiurl + "?reqType=save-session-chat", data, this.httpOptions);
         } catch (ex) {
             throw ex;
         }

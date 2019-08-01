@@ -9,7 +9,9 @@ export class GlobalService {
     Type: string,
     Sender: string,
     Date: string
-  }>();;
+  }>();
+  public sessionid: any;
+  public sessionUserDbId: any;
   constructor() {
 
   }

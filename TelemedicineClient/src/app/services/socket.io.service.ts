@@ -22,7 +22,7 @@ export class SocketIOService {
     }
     public RemoveUser() {
         this.socket.close();
-        
+
         this.socket = io(this.url);
     }
 
@@ -75,10 +75,12 @@ export class SocketIOService {
      * following requests are used for video call
      */
 
-    public VideoCallRequest(from, to) {
+    public VideoCallRequest(from, to, sessionid, userid) {
         this.socket.emit('video-call', {
             fromname: from,
-            toid: to
+            toid: to,
+            sessionid: sessionid,
+            userid: userid
         });
     }
     public OnVideoCallRequest() {
@@ -88,10 +90,12 @@ export class SocketIOService {
             });
         });
     }
-    public VideoCallAccepted(from, to) {
+    public VideoCallAccepted(from, to, sessionid, userid) {
         this.socket.emit('video-call-accept', {
             fromname: from,
-            toid: to
+            toid: to,
+            sessionid: sessionid,
+            userid: userid
         });
     }
     public OnVideoCallAccepted() {

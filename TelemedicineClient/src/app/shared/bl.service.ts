@@ -96,6 +96,20 @@ export class BLService {
      * START POST
      *****************************************************************/
     
+     /*****************************
+     * Home POST
+     *****************************/
+    //when user accepted call then add new session
+    public SaveNewSession(data) {
+        try {
+            var session = JSON.stringify(data)
+            return this.dlservice.SaveNewSession(session)
+                .pipe(map((res: any) => JSON.parse(res)));
+        } catch (ex) {
+            throw ex;
+        }
+    }
+
     /*****************************
      * Clinical POST
      *****************************/
@@ -111,6 +125,20 @@ export class BLService {
         try {
             var user = JSON.stringify(data)
             return this.dlservice.RegisterNewUser(user)
+                .pipe(map((res: any) => JSON.parse(res)));
+        } catch (ex) {
+            throw ex;
+        }
+    }
+    
+    /*****************************
+     * Message POST
+     *****************************/
+    //save chat for maintain history
+    public SaveChat(data) {
+        try {
+            var chat = JSON.stringify(data);
+            return this.dlservice.SaveChat(chat)
                 .pipe(map((res: any) => JSON.parse(res)));
         } catch (ex) {
             throw ex;

@@ -182,6 +182,9 @@ export class HomeComponent implements OnInit {
     /*****************************************************************
      * Section Chat
      *****************************************************************/
+    //currently showing only chat history on home page
+    //there is hidden button for chat on home page without making call
+    //if required then need to do proper ui for that 
     private OnChatRequest() {
         this.socketIOService
             .OnChatRequest()
@@ -223,6 +226,8 @@ export class HomeComponent implements OnInit {
                 this.callingInfo.name = data.fromname;
                 this.callingInfo.content = "Calling....";
                 this.callingInfo.type = "receiver";
+                this.globalService.sessionid = data.sessionid;
+                this.globalService.sessionUserDbId = data.userid;
                 this.isVideoCall = true;
             });
     }
@@ -235,6 +240,10 @@ export class HomeComponent implements OnInit {
                 var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
                 this.globalService.callType = 'dialer';
                 this.globalService.caller = calee.id;
+                this.globalService.sessionid = data.sessionid;
+                this.globalService.sessionUserDbId = data.userid;
+                //save session info to db
+                this.SaveNewSession();
                 this.router.navigate(['/Clinical']);
                 this.socketIOService.BusyNow();
                 this.Close();
@@ -257,7 +266,10 @@ export class HomeComponent implements OnInit {
         //find callee in live user list if found then send call request
         var calee = this.liveUserList.find(a => a.username == callee.username);
         if (calee) {
-            this.socketIOService.VideoCallRequest(this.loggedUserName, calee.id);
+            var sessionid = moment(new Date()).format('YYYYMMDDHHmmss');
+            this.socketIOService.VideoCallRequest(this.loggedUserName, calee.id, sessionid, this.globalService.loggedUserInfo.UserId);
+        } else {
+            return;
         }
         this.callee = callee;
         this.callingInfo.name = callee.username;
@@ -269,11 +281,13 @@ export class HomeComponent implements OnInit {
     public AcceptVideoCall() {
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
-            this.socketIOService.VideoCallAccepted(this.loggedUserName, calee.id);
+            this.socketIOService.VideoCallAccepted(this.loggedUserName, calee.id, this.globalService.sessionid, this.globalService.loggedUserInfo.UserId);
             this.globalService.callType = 'receiver';
             this.globalService.caller = calee.id;
             this.router.navigate(['/Clinical']);
             this.socketIOService.BusyNow();
+        } else {
+            this.RejectVideoCall();
         }
         this.Close();
     }
@@ -331,6 +345,7 @@ export class HomeComponent implements OnInit {
                 .subscribe(res => {
                     if (res.Status == 'OK') {
                         this.userContacts = res.Results;
+                        this.changeDetector.detectChanges;
                     } else {
                         console.log(res.ErrorMessgae);
                     }
@@ -385,5 +400,21 @@ export class HomeComponent implements OnInit {
         } catch (ex) {
             console.log(ex);
         }
+    }
+    //after video call is accpted by receiver save session info to db
+    private SaveNewSession() {
+        var data = {
+            SessionId: this.globalService.sessionid,
+            CreatedBy: this.globalService.loggedUserInfo.UserId,
+            CallingTo: this.globalService.sessionUserDbId,
+            CreatedOn: new Date()
+        };
+        this.blService.SaveNewSession(data)
+            .subscribe(res => {
+                if (res.Status == 'OK') {
+                    //var data = res.Results;
+                    console.log("session saved");
+                }
+            });
     }
 }
