@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit {
     public isChat = false;
     public isVideoCall = false;
     public isAudioCall = false;
+    public isAudioCallAccepted = false;
     public liveUserList = [];
     public callee: any;
     public callingInfo = { name: "", content: "", type: "" };
@@ -36,6 +37,7 @@ export class HomeComponent implements OnInit {
     public isShowChat = false;
     public caller: any;
     public callDetails: any;
+    public userType: any;
 
     constructor(
         private router: Router,
@@ -75,6 +77,10 @@ export class HomeComponent implements OnInit {
         this.GetBusyUsers();
         this.OnVideoCallRejected();
         this.OnChatRequest();
+
+        this.OnAudioCallRequest();
+        this.OnAudioCallAccepted();
+        this.OnAudioCallRejected();
     }
 
     /*****************************************************************
@@ -165,6 +171,7 @@ export class HomeComponent implements OnInit {
         } catch (ex) {
             console.log(ex);
         }
+        this.changeDetector.detectChanges();
     }
 
     //when user set to busy detect it as busy
@@ -319,10 +326,94 @@ export class HomeComponent implements OnInit {
     /*****************************************************************
      * Section Audio
      *****************************************************************/
-    public AudioCall() {
+    public AudioCall(callee) {
+        //find callee in live user list if found then send call request
+        var calee = this.liveUserList.find(a => a.username == callee.username);
+        if (calee) {
+            var sessionid = moment(new Date()).format('YYYYMMDDHHmmss');
+            this.socketIOService.AudioCallRequest(this.loggedUserName, calee.id, sessionid, this.globalService.loggedUserInfo.UserId);
+        } else {
+            return;
+        }
+        this.callee = callee;
+        this.callingInfo.name = callee.username;
+        this.callingInfo.content = "Dialing....";
+        this.callingInfo.type = "dialer";
+        this.userType = 'dialer';
         this.isAudioCall = true;
     }
+    //after receiving audio call request show audio call popup with accept or reject button
+    private OnAudioCallRequest() {
+        this.socketIOService
+            .OnAudioCallRequest()
+            .subscribe(data => {
+                this.callingInfo.name = data.fromname;
+                this.callingInfo.content = "Calling....";
+                this.callingInfo.type = "receiver";
+                this.userType = 'receiver';
+                this.globalService.sessionid = data.sessionid;
+                this.globalService.sessionUserDbId = data.userid;
+                this.isAudioCall = true;
+            });
+    }
+    public AcceptAudioCall() {
+        var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
+        if (calee) {
+            this.socketIOService.AudioCallAccepted(this.loggedUserName, calee.id, this.globalService.sessionid, this.globalService.loggedUserInfo.UserId);
+            sessionStorage.setItem("callinginfo", JSON.stringify({ userType: 'receiver', caller: calee.id }));
+            this.caller = calee.id;
+            this.socketIOService.BusyNow();
+            this.isAudioCallAccepted = true;
+        } else {
+            this.isAudioCallAccepted = false;
+            this.RejectAudioCall();
+        }
+        this.CloseAudioCallPopup();
+    }
+    public RejectAudioCall() {
+        sessionStorage.removeItem("callinginfo");
+        var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
+        if (calee) {
+            this.socketIOService.AudioCallRejected(this.loggedUserName, calee.id);
+            this.isAudioCallAccepted = false;
+        }
+        this.CloseAudioCallPopup();
+    }
+    private OnAudioCallAccepted() {
+        this.socketIOService
+            .OnAudioCallAccepted()
+            .subscribe(data => {
+                var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
+                sessionStorage.setItem("callinginfo", JSON.stringify({ userType: 'dialer', caller: calee.id }));
+                this.globalService.sessionid = data.sessionid;
+                this.globalService.sessionUserDbId = data.userid;
+                this.caller = calee.id;
+                this.socketIOService.BusyNow();
+                this.isAudioCallAccepted = true;
+                this.CloseAudioCallPopup();
+            });
+    }
+    //if audio call rejected by receiver then notify to caller
+    private OnAudioCallRejected() {
+        this.socketIOService
+            .OnAudioCallRejected()
+            .subscribe(data => {
+                this.callingInfo.content = "Call Rejected ..";
+                this.isAudioCallAccepted = false;
+                setTimeout(() => {
+                    this.CloseAudioCallPopup();
+                }, 1000);
+            });
+    }
 
+    private CloseAudioCallPopup() {
+        this.isAudioCall = false;
+    }
+    public Callback(e) {
+        this.isAudioCallAccepted = false;
+        this.isAudioCall = false;
+        location.reload();
+    }
 
     /*****************************************************************
      * Section UI methods

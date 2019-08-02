@@ -11,6 +11,12 @@ export class SocketIOService {
         this.socket = io(this.url);
     }
 
+    /**
+     * Common methods
+     */
+    /**
+     * @param username set to socket
+     */
     public SetUserName(username) {
         this.socket.emit('add user', username);
         return Observable.create((observer) => {
@@ -20,6 +26,9 @@ export class SocketIOService {
             });
         });
     }
+    /**
+     * Remove all user data from socket
+     */
     public RemoveUser() {
         this.socket.close();
 
@@ -30,6 +39,29 @@ export class SocketIOService {
         this.socket.emit('new-broadcast-message', message);
     }
 
+    public GetConnectedUsers() {
+        return Observable.create((observer) => {
+            this.socket.on('client-list', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+    //set user is busy when user is on call
+    public BusyNow() {
+        this.socket.emit('busy-user');
+    }
+    public GetBusyUsers() {
+        this.socket.emit('get-busy-user');
+        return Observable.create((observer) => {
+            this.socket.on('get-busy-user', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+    
+    /*********************************************************************
+     * Messaging
+     *********************************************************************/
     public SendMessage(message, from, to) {
         //this.socket.emit('new-message', message);
         this.socket.emit('new-message', {
@@ -46,14 +78,6 @@ export class SocketIOService {
             });
         });
     }
-    public GetConnectedUsers() {
-        return Observable.create((observer) => {
-            this.socket.on('client-list', (data) => {
-                observer.next(data);
-            });
-        });
-    }
-
     public SendDocument(data) {
         this.socket.emit('send-document', data);
     }
@@ -66,7 +90,7 @@ export class SocketIOService {
         });
     }
     /***
-     * Section Chat
+     * Section home Chat
      * following requests are used for Chat
      */
 
@@ -80,6 +104,71 @@ export class SocketIOService {
             });
         });
     }
+
+    /***
+     * Section Audio call
+     * following requests are used for audio call
+     */
+
+    public AudioCallRequest(from, to, sessionid, userid) {
+        this.socket.emit('audio-call', {
+            fromname: from,
+            toid: to,
+            sessionid: sessionid,
+            userid: userid
+        });
+    }
+    public OnAudioCallRequest() {
+        return Observable.create((observer) => {
+            this.socket.on('audio-call', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+    public AudioCallAccepted(from, to, sessionid, userid) {
+        this.socket.emit('audio-call-accept', {
+            fromname: from,
+            toid: to,
+            sessionid: sessionid,
+            userid: userid
+        });
+    }
+    public OnAudioCallAccepted() {
+        return Observable.create((observer) => {
+            this.socket.on('audio-call-accept', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+    public EndAudioCall(from, to, toname) {
+        this.socket.emit('end-audio-call', {
+            fromname: from,
+            toid: to,
+            toname: toname
+        });
+    }
+    public OnAudioCallEnded() {
+        this.socket.emit('get-busy-user');
+        return Observable.create((observer) => {
+            this.socket.on('audio-call-ended', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+    public AudioCallRejected(from, to) {
+        this.socket.emit('audio-call-reject', {
+            fromname: from,
+            toid: to
+        });
+    }
+    public OnAudioCallRejected() {
+        return Observable.create((observer) => {
+            this.socket.on('audio-call-reject', (data) => {
+                observer.next(data);
+            });
+        });
+    }
+
 
     /***
      * Section Video call
@@ -116,17 +205,6 @@ export class SocketIOService {
             });
         });
     }
-    public BusyNow() {
-        this.socket.emit('busy-user');
-    }
-    public GetBusyUsers() {
-        this.socket.emit('get-busy-user');
-        return Observable.create((observer) => {
-            this.socket.on('get-busy-user', (data) => {
-                observer.next(data);
-            });
-        });
-    }
     public EndVideoCall(from, to, toname) {
         this.socket.emit('end-video-call', {
             fromname: from,
@@ -155,9 +233,11 @@ export class SocketIOService {
             });
         });
     }
+
+
     /**
      * 
-     * @param candidate or @param description for video call
+     * @param candidate or @param description for audio/video call
      * need to send remote user id
      */
     public SendCallRequest(val, type, uid) {

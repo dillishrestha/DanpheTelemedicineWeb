@@ -1,0 +1,15 @@
+<!-- <div class="row">
+    <button (click)="Call()">Connect</button>
+</div> -->
+<div class="row" style="height: 100%; width:100%; overflow: hidden;">
+    <div class="col-lg-12" style="height: 100%;">
+        <audio id="remote-audio" class="remotevideo" controls autoplay></audio>
+        <audio id="local-audio" class="localvideo" controls autoplay muted></audio>
+    </div>
+</div>
+<div class="row call-btn-div">
+    <button (click)="EndCall()" class="btn btn-sm btn-danger end-call-btn"><i class="fa fa-phone"></i></button>
+    <button (click)="Mute()" *ngIf="!isMuted" class="btn btn-sm btn-danger end-call-btn"><i class="fa fa-microphone"></i></button>
+    <button (click)="Unmute()" *ngIf="isMuted" class="btn btn-sm btn-danger end-call-btn"><i class="fa fa-microphone-slash"></i></button>
+</div>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>

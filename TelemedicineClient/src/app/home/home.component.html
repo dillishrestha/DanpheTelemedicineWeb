@@ -25,11 +25,14 @@
                             <tr *ngFor="let row of contactListTodispaly">
                                 <td>{{row.username}}</td>
                                 <td>
-                                    <button *ngIf="row.live" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
+                                    <button *ngIf="row.live && !row.busy" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
                                         <i class="fa fa-video-camera"></i>
                                     </button>
                                     <button *ngIf="row.live" title="Live Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-live-chat" (click)="Chat(row)">
                                         <i class="fa fa-comments"></i>
+                                    </button>
+                                    <button *ngIf="row.live && !row.busy" title="Audio Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-live-chat" (click)="AudioCall(row)">
+                                        <i class="fa fa-phone"></i>
                                     </button>
                                     <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="LoadOldChat(row)">
                                         <i class="fa fa-history"></i>
@@ -118,7 +121,7 @@
     <div class="popup-content">
         <span (click)="RejectVideoCall()" class="popup-close">&times;</span>
         <div class="popup-header">
-            <h4>{{callingInfo.name}}</h4>
+            <h4>{{callingInfo.name}}</h4>Video
             <h5>{{callingInfo.content}}</h5>
         </div>
         <div *ngIf="callingInfo.type == 'receiver'" style="text-align: center;">
@@ -134,6 +137,26 @@
         <span (click)="CloseAddContact()" class="popup-close">&times;</span>
         <div class="popup-header">
             We are working on it, Use demo crediantials for full demo
+        </div>
+    </div>
+</div>
+
+
+<div class="div-audio" *ngIf="isAudioCallAccepted">
+    <audio-call [caller]="caller" [userType]="userType" (callback)="Callback($event)"></audio-call>
+</div>
+
+<!-- Audio Call Popup -->
+<div class="popup-box" *ngIf="isAudioCall">
+    <div class="popup-content">
+        <span (click)="RejectAudioCall()" class="popup-close">&times;</span>
+        <div class="popup-header">
+            <h4>{{callingInfo.name}}</h4>Audio
+            <h5>{{callingInfo.content}}</h5>
+        </div>
+        <div *ngIf="callingInfo.type == 'receiver'" style="text-align: center;">
+            <button (click)="AcceptAudioCall()" class="btn btn-success btn-sm">Accept</button>
+            <button (click)="RejectAudioCall()" class="btn btn-danger btn-sm">Reject</button>
         </div>
     </div>
 </div>

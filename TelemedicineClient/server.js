@@ -150,6 +150,35 @@ io.on('connection', (socket) => {
         socket.broadcast.to(data.toid).emit('video-call-ended', data);
         socket.broadcast.emit('get-busy-user', busyUsers);
     });
+
+
+    /***
+     * Section Audio call
+     * following requests are used for audio call
+     */
+    socket.on('audio-call', (data) => {
+        socket.broadcast.to(data.toid).emit('audio-call', data);
+    });
+    socket.on('audio-call-accept', (data) => {
+        socket.broadcast.to(data.toid).emit('audio-call-accept', data);
+    });
+    socket.on('audio-call-reject', (data) => {
+        socket.broadcast.to(data.toid).emit('audio-call-reject', data);
+    });
+    socket.on('end-audio-call', (data) => {
+        if (busyUsers.length > 0) {
+            var usr1 = busyUsers.find(a => a.username == socket.username);
+            var index1 = busyUsers.indexOf(usr1);
+            busyUsers.splice(index1, 1);
+
+            var usr2 = busyUsers.find(a => a.username == data.toname);
+            var index2 = busyUsers.indexOf(usr2);
+            busyUsers.splice(index2, 1);
+        }
+        socket.broadcast.to(data.toid).emit('audio-call-ended', data);
+        socket.broadcast.emit('get-busy-user', busyUsers);
+    });
+
     // when the caller emits 'call-request', this listens and executes
     socket.on('call-request', (data) => {
         // we tell the client to execute 'call-request'

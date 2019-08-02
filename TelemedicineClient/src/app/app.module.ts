@@ -18,6 +18,7 @@ import { LoginComponent } from './login/login.component'
 import { AppComponent } from './app.component';
 import { MessageComponent } from './communication/message.component';
 import { VideoComponent } from './communication/video.component';
+import { AudioComponent } from './communication/audio.component';
 import { ClinicalComponent } from './clinical/clinical.component';
 
 @NgModule({
@@ -27,6 +28,7 @@ import { ClinicalComponent } from './clinical/clinical.component';
     LoginComponent,
     MessageComponent,
     VideoComponent,
+    AudioComponent,
     ClinicalComponent
   ],
   imports: [
