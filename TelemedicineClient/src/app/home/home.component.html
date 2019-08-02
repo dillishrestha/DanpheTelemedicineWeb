@@ -28,7 +28,7 @@
                                     <button *ngIf="row.live" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
                                         <i class="fa fa-video-camera"></i>
                                     </button>
-                                    <button hidden *ngIf="row.live" title="Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-create-room" (click)="Chat(row)">
+                                    <button *ngIf="row.live" title="Live Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-live-chat" (click)="Chat(row)">
                                         <i class="fa fa-comments"></i>
                                     </button>
                                     <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="LoadOldChat(row)">
@@ -105,7 +105,10 @@
             </div>
         </div>
         <div class="row no-margin" *ngIf="isChat">
-            <message style="width: 100%" [caller]="caller" (callback)="CallBack($event)"></message>
+            <div class="col-lg-2"></div>
+            <div class="col-lg-4 col-sm-10" style="height: 50vh; border: solid 1px black; padding-bottom: 4%; border-radius: 10px;">
+                <message style="width: 100%; height: 100%;" [caller]="caller" (callback)="CallBack($event)"></message>
+            </div>
         </div>
     </div>
 </div>
