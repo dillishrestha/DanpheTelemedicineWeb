@@ -32,7 +32,8 @@ export class ClinicalComponent implements OnInit {
     public fileUploadMessage: string;
     public sessionDocList = new Array<any>();
     public isChat = false;
-    public showMsg = false;
+    public showMsgSuccess = false;
+    public showMsgError = false;
     public boxMessage = '';
     public remoteUserDetails = { username: '', role: '' };
 
@@ -82,20 +83,30 @@ export class ClinicalComponent implements OnInit {
                 this.ScrollToBottom("div-file");
             });
     }
-    ShowMessage(msg) {
+
+    //showing msg 
+    private ShowMessage(isSuccess, msg) {
         this.boxMessage = msg;
-        this.showMsg = true;
+        if (isSuccess) {
+            this.showMsgSuccess = true;
+        } else {
+            this.showMsgError = true;
+        }
         setTimeout(() => {
-            this.showMsg = false;
+            this.showMsgSuccess = false;
+            this.showMsgError = false;
         }, 5000);
     }
-    CloseMsgBox() {
-        this.showMsg = false;
+    //close MsgBox
+    public CloseMsgBox() {
+        this.showMsgSuccess = false;
+        this.showMsgError = false;
     }
-    /**
+
+    /*******************************************
      * Video Call Methods
-     */
-    CallBack(event) {
+     *******************************************/
+    public CallBack(event) {
         this.isVideoCall = false;
         this.isChat = false;
         this.changeDetector.detectChanges();
@@ -103,10 +114,10 @@ export class ClinicalComponent implements OnInit {
         location.reload();
     }
 
-    /**
+    /******************************************
      * Clinical methods
-     */
-    ConsultRequest() {
+     ******************************************/
+    public ConsultRequest() {
         if (this.consult == '') {
             return;
         }
@@ -115,8 +126,9 @@ export class ClinicalComponent implements OnInit {
         this.ScrollToBottom("div-consult");
     }
 
-
-    Save(val) {
+    //saving clinical data
+    //currently not in db only ui 
+    public Save(val) {
         var id = '';
         if (val == 'Complain') {
             if (this.complain != "") {
@@ -160,9 +172,10 @@ export class ClinicalComponent implements OnInit {
         div.scrollTop = div.clientHeight;
         div.scrollTop = div.scrollHeight - div.scrollTop;
     }
-    /**
+
+    /*******************************************
      * database call methods
-     */
+     ********************************************/
 
     /*** Upload File ***/
     UploadFile(files) {
@@ -170,17 +183,19 @@ export class ClinicalComponent implements OnInit {
             return;
         const formData = new FormData();
         for (let file of files) {
+            //setting file size limit 10 10MB
             if (file.size > 10000000) {
                 alert("File must be less than 10MB");
                 return;
             }
             formData.append(file.name, file);
         }
+        //Uploading file to db
         this.blService.UploadFile(this.globalService.sessionid, this.globalService.loggedUserInfo.UserId, formData)
             .subscribe(event => {
                 if (event.type === HttpEventType.UploadProgress) {
                     this.fileuploadprogress = Math.round(100 * event.loaded / event.total);
-                    this.ShowMessage("Uploading....");
+                    this.ShowMessage(true, "Uploading....");
                 }
                 else if (event.type === HttpEventType.Response) {
                     var jsondata = event.body.toString();
@@ -190,11 +205,12 @@ export class ClinicalComponent implements OnInit {
                         //send received data to other user
                         this.sessionDocList.push(data);
                         this.SendDocument(data);
-                        this.ShowMessage("Upload Successful.");
-                        this.fileUploadMessage = "Upload Successful.";
+                        this.ShowMessage(true, "Upload Successful.");
+                        //this.fileUploadMessage = "Upload Successful.";
                         this.ScrollToBottom("div-file");
                     } else {
-                        this.fileUploadMessage = res.ErrorMessage;
+                        this.ShowMessage(false, "File uploading error");
+                        //this.fileUploadMessage = res.ErrorMessage;
                     }
                     setTimeout(() => {
                         this.fileUploadMessage = '';
@@ -241,6 +257,7 @@ export class ClinicalComponent implements OnInit {
     }
     //call ended
     private CallEnded() {
+        //after call ended setting call end time in db
         var data = {
             SessionId: this.globalService.sessionid,
             EndTime: new Date()
@@ -248,7 +265,7 @@ export class ClinicalComponent implements OnInit {
         this.blService.EndVideoCall(data)
             .subscribe(res => {
                 if (res.Status == "OK") {
-                    
+
                 }
             });
     }
@@ -259,6 +276,7 @@ export class ClinicalComponent implements OnInit {
     SwitchTabContent(eleid, type) {
         var idlist = [];
         if (type == 'finance') {
+            //idlist contains id's of tab
             idlist = ['nav-finance', 'nav-clinical', 'nav-visit'];
         } else if (type == 'clinical') {
             idlist = ['nav-chief', 'nav-examination', 'nav-assessment', 'nav-plan', 'nav-orders'];

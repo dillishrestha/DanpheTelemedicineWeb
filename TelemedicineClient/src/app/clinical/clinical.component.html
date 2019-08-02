@@ -231,8 +231,15 @@
 </div>
 
 
-<div id="msg-box" class="msg-box" *ngIf="showMsg">
-    <div class="msg-box-content">
+<div id="msg-box" class="msg-box" *ngIf="showMsgSuccess">
+    <div class="msg-box-content" style="background-color: green;">
+        <span (click)="CloseMsgBox()" class="msg-box-close">&times;</span>
+        <p>{{boxMessage}}</p>
+    </div>
+</div>
+
+<div id="msg-box" class="msg-box" *ngIf="showMsgError">
+    <div class="msg-box-content" style="background-color: red;">
         <span (click)="CloseMsgBox()" class="msg-box-close">&times;</span>
         <p>{{boxMessage}}</p>
     </div>
