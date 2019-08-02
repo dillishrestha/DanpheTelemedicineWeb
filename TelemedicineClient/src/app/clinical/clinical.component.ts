@@ -42,11 +42,12 @@ export class ClinicalComponent implements OnInit {
         private changeDetector: ChangeDetectorRef,
         private router: Router,
         private socketIOService: SocketIOService) {
-        if (this.globalService.callType) {
-            this.userType = this.globalService.callType;
-        }
-        if (this.globalService.caller) {
-            this.caller = this.globalService.caller;
+        var callinfo = JSON.parse(sessionStorage.getItem("callinginfo"));
+        if (callinfo) {
+            this.userType = callinfo.userType;
+            this.caller = callinfo.caller;
+        } else {
+            this.router.navigate(['/']);
         }
         this.GetDocumnetList(this.globalService.loggedUserInfo.UserId + "," + this.globalService.sessionUserDbId);
         this.GetRemoteUserDetails(this.globalService.sessionUserDbId);
@@ -111,6 +112,7 @@ export class ClinicalComponent implements OnInit {
         this.isChat = false;
         this.changeDetector.detectChanges();
         this.CallEnded();
+        sessionStorage.removeItem("callinginfo");
         location.reload();
     }
 

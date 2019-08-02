@@ -2,8 +2,6 @@
 export class GlobalService {
   public isUserLoggedin = false;
   public loggedUserInfo: any;
-  public callType: string;
-  public caller: any;
   public messgaes = new Array<{
     Message: string,
     Type: string,

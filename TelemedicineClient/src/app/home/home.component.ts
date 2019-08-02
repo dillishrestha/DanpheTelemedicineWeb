@@ -154,6 +154,10 @@ export class HomeComponent implements OnInit {
                 }
             }
         }
+        var calldata = JSON.parse(sessionStorage.getItem("callinginfo"));
+        if (calldata) {
+            //this.router.navigate(['/Clinical']);
+        }
     }
 
     //when user set to busy detect it as busy
@@ -192,7 +196,7 @@ export class HomeComponent implements OnInit {
             .subscribe(data => {
                 if (data) {
                     this.isChat = true;
-                    this.globalService.caller = data;
+                    sessionStorage.setItem("callinginfo", JSON.stringify({ userType: '', caller: data }));
                     this.caller = data;
                 }
             });
@@ -201,7 +205,7 @@ export class HomeComponent implements OnInit {
     public Chat(callee) {
         this.isChat = true;
         var calee = this.liveUserList.find(a => a.username == callee.username);
-        this.globalService.caller = calee.id;
+        sessionStorage.setItem("callinginfo", JSON.stringify({ userType: '', caller: calee.id }));
         this.caller = calee.id;
         this.socketIOService.SendChatRequest(calee.id);
     }
@@ -239,8 +243,7 @@ export class HomeComponent implements OnInit {
             .OnVideoCallAccepted()
             .subscribe(data => {
                 var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
-                this.globalService.callType = 'dialer';
-                this.globalService.caller = calee.id;
+                sessionStorage.setItem("callinginfo", JSON.stringify({ userType: 'dialer', caller: calee.id }));
                 this.globalService.sessionid = data.sessionid;
                 this.globalService.sessionUserDbId = data.userid;
                 //save session info to db
@@ -283,8 +286,7 @@ export class HomeComponent implements OnInit {
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
             this.socketIOService.VideoCallAccepted(this.loggedUserName, calee.id, this.globalService.sessionid, this.globalService.loggedUserInfo.UserId);
-            this.globalService.callType = 'receiver';
-            this.globalService.caller = calee.id;
+            sessionStorage.setItem("callinginfo", JSON.stringify({ userType: 'receiver', caller: calee.id }));
             this.router.navigate(['/Clinical']);
             this.socketIOService.BusyNow();
         } else {
@@ -294,6 +296,7 @@ export class HomeComponent implements OnInit {
     }
     //if video call request is rejected then notify to dialer that call is rejected
     public RejectVideoCall() {
+        sessionStorage.removeItem("callinginfo");
         var calee = this.liveUserList.find(a => a.username == this.callingInfo.name);
         if (calee) {
             this.socketIOService.VideoCallRejected(this.loggedUserName, calee.id);
