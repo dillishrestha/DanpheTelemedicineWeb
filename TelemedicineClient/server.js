@@ -73,6 +73,9 @@ io.on('connection', (socket) => {
     socket.on('new-message', (data) => {
         socket.broadcast.to(data.toid).emit('new-message', data);
     });
+    socket.on('chat-ended', (toid) => {
+        socket.broadcast.to(toid).emit('chat-ended', socket.id);
+    });
 
     // when the client emits 'typing', we broadcast it to others
     socket.on('typing', () => {

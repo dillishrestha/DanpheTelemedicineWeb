@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit {
     public caller: any;
     public callDetails: any;
     public userType: any;
+    public isBusy = false;
 
     constructor(
         private router: Router,
@@ -76,7 +77,9 @@ export class HomeComponent implements OnInit {
         this.OnVideoCallAccepted();
         this.GetBusyUsers();
         this.OnVideoCallRejected();
+
         this.OnChatRequest();
+        this.OnChatEnded();
 
         this.OnAudioCallRequest();
         this.OnAudioCallAccepted();
@@ -171,7 +174,6 @@ export class HomeComponent implements OnInit {
         } catch (ex) {
             console.log(ex);
         }
-        this.changeDetector.detectChanges();
     }
 
     //when user set to busy detect it as busy
@@ -233,7 +235,20 @@ export class HomeComponent implements OnInit {
     public CloseChat() {
         this.isShowChat = false;
     }
-
+    //
+    CloseMessaging(){
+        this.isChat = false;
+        this.socketIOService.ChatEnded(this.caller);
+    }
+    private OnChatEnded() {
+        this.socketIOService
+            .OnChatEnded()
+            .subscribe(data => {
+                if (data) {
+                    this.isChat = false;
+                }
+            });
+    }
     /*****************************************************************
      * Section Video
      *****************************************************************/
@@ -262,9 +277,10 @@ export class HomeComponent implements OnInit {
                 this.globalService.sessionUserDbId = data.userid;
                 //save session info to db
                 this.SaveNewSession();
-                this.router.navigate(['/Clinical']);
                 this.socketIOService.BusyNow();
+                this.isBusy = true;
                 this.Close();
+                this.router.navigate(['/Clinical']);
             });
     }
     //if video call rejected by receiver then notify to caller
@@ -301,8 +317,9 @@ export class HomeComponent implements OnInit {
         if (calee) {
             this.socketIOService.VideoCallAccepted(this.loggedUserName, calee.id, this.globalService.sessionid, this.globalService.loggedUserInfo.UserId);
             sessionStorage.setItem("callinginfo", JSON.stringify({ userType: 'receiver', caller: calee.id }));
-            this.router.navigate(['/Clinical']);
             this.socketIOService.BusyNow();
+            this.isBusy = true;
+            this.router.navigate(['/Clinical']);
         } else {
             this.RejectVideoCall();
         }
@@ -363,6 +380,7 @@ export class HomeComponent implements OnInit {
             sessionStorage.setItem("callinginfo", JSON.stringify({ userType: 'receiver', caller: calee.id }));
             this.caller = calee.id;
             this.socketIOService.BusyNow();
+            this.isBusy = true;
             this.isAudioCallAccepted = true;
         } else {
             this.isAudioCallAccepted = false;
@@ -389,6 +407,7 @@ export class HomeComponent implements OnInit {
                 this.globalService.sessionUserDbId = data.userid;
                 this.caller = calee.id;
                 this.socketIOService.BusyNow();
+                this.isBusy = true;
                 this.isAudioCallAccepted = true;
                 this.CloseAudioCallPopup();
             });
@@ -412,6 +431,7 @@ export class HomeComponent implements OnInit {
     public Callback(e) {
         this.isAudioCallAccepted = false;
         this.isAudioCall = false;
+        this.isBusy = false;
         location.reload();
     }
 

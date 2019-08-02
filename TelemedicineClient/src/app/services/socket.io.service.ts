@@ -104,7 +104,16 @@ export class SocketIOService {
             });
         });
     }
-
+    ChatEnded(toid){
+        this.socket.emit('chat-ended', toid);
+    }
+    OnChatEnded() {
+        return Observable.create((observer) => {
+            this.socket.on('chat-ended', (data) => {
+                observer.next(data);
+            });
+        });
+    }
     /***
      * Section Audio call
      * following requests are used for audio call

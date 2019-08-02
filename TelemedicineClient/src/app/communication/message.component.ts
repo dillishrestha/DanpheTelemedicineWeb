@@ -44,14 +44,16 @@ export class MessageComponent implements OnInit {
     this.messages.push(msg);
     this.socketIOService.SendMessage(this.message, this.loggedUserName, this.caller);
 
-    var Data = {
-      SessionId: this.globalService.sessionid,
-      SenderId: this.globalService.loggedUserInfo.UserId,
-      SentTime: new Date(),
-      SentText: this.message
-    };
-    //saving message in db
-    this.SaveChat(Data);
+    if (this.globalService.sessionid) {
+      var Data = {
+        SessionId: this.globalService.sessionid,
+        SenderId: this.globalService.loggedUserInfo.UserId,
+        SentTime: new Date(),
+        SentText: this.message
+      };
+      //saving message in db
+      this.SaveChat(Data);
+    }
 
     this.message = '';
     this.ScrollToBottom('div-msg');
@@ -71,7 +73,6 @@ export class MessageComponent implements OnInit {
         msg.Type = "received";
         msg.Date = moment(new Date()).format('MMM DD h:mm A');
         this.messages.push(msg);
-        this.changeDetector.detectChanges();
         this.ScrollToBottom('div-msg');
       });
   }

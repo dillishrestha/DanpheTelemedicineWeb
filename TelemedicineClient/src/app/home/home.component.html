@@ -25,13 +25,13 @@
                             <tr *ngFor="let row of contactListTodispaly">
                                 <td>{{row.username}}</td>
                                 <td>
-                                    <button *ngIf="row.live && !row.busy" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
+                                    <button *ngIf="(row.live && !row.busy) && !isBusy" title="Video Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-video-call" (click)="VideoCall(row)">
                                         <i class="fa fa-video-camera"></i>
                                     </button>
                                     <button *ngIf="row.live" title="Live Chat" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-live-chat" (click)="Chat(row)">
                                         <i class="fa fa-comments"></i>
                                     </button>
-                                    <button *ngIf="row.live && !row.busy" title="Audio Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-live-chat" (click)="AudioCall(row)">
+                                    <button *ngIf="(row.live && !row.busy) && !isBusy" title="Audio Call" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-live-chat" (click)="AudioCall(row)">
                                         <i class="fa fa-phone"></i>
                                     </button>
                                     <button title="Chat History" style="margin: 0px 5px;" class="btn btn-primary btn-sm" id="btn-chat" (click)="LoadOldChat(row)">
@@ -111,6 +111,7 @@
             <div class="col-lg-2"></div>
             <div class="col-lg-4 col-sm-10" style="height: 50vh; border: solid 1px black; padding-bottom: 4%; border-radius: 10px;">
                 <message style="width: 100%; height: 100%;" [caller]="caller" (callback)="CallBack($event)"></message>
+                <span (click)="CloseMessaging()" style="z-index: 1;position: absolute;top: 25px;right: 0px;" class="popup-close">&times;</span>
             </div>
         </div>
     </div>
