@@ -9,6 +9,8 @@
 </div>
 <div class="row call-btn-div">
     <button (click)="EndCall()" class="btn btn-sm btn-danger end-call-btn"><i class="fa fa-phone"></i></button>
+    <button (click)="Mute()" *ngIf="!isMuted" class="btn btn-sm btn-danger end-call-btn"><i class="fa fa-microphone"></i></button>
+    <button (click)="Unmute()" *ngIf="isMuted" class="btn btn-sm btn-danger end-call-btn"><i class="fa fa-microphone-slash"></i></button>
 </div>
 <!-- <div id="div-remote-video"></div> -->
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>

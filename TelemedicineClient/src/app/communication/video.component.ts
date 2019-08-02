@@ -40,18 +40,20 @@ export class VideoComponent implements OnInit {
     };
     private mediaConstraints = {
         audio: true,
-        video: {
-            width: {
-                min: 300,
-                max: 640
-            },
-            height: {
-                min: 200,
-                max: 480
-            }
-        }
+        video: true
+        // video: {
+        //     width: {
+        //         min: 300,
+        //         max: 640
+        //     },
+        //     height: {
+        //         min: 200,
+        //         max: 480
+        //     }
+        // }
     };
     public loggedUserName;
+    public isMuted = false;
 
     public caller;
     @Input('caller')
@@ -79,6 +81,13 @@ export class VideoComponent implements OnInit {
         private socketIOService: SocketIOService,
         private router: Router,
         private changeDetector: ChangeDetectorRef) {
+        window.addEventListener("beforeunload", this.BeforeUpload.bind(this));
+    }
+    private BeforeUpload(e){
+        this.EndCall();
+        setTimeout(() => {
+            return "Call Ended";
+        }, 2000);
     }
 
     SetConnection() {
@@ -110,7 +119,7 @@ export class VideoComponent implements OnInit {
         } catch (ex) {
             alert("unable to get local camera..!");
             console.log(ex);
-            this.CallBack();
+            this.EndCall();
         }
         //this.peerConnection.addStream(this.localStream);
         this.peerConnection.onicecandidate = e => {
@@ -398,7 +407,7 @@ export class VideoComponent implements OnInit {
                 }
             });
     }
-    CallBack() {
+    private CallBack() {
         try {
             var senders = this.peerConnection.getSenders();
             senders.forEach(s => {
@@ -420,5 +429,13 @@ export class VideoComponent implements OnInit {
             this.ngOnInit();
             this.callback.emit({ status: "call ended" });
         }
+    }
+    public Mute() {
+        this.isMuted = true;
+        this.localStream.getAudioTracks()[0].enabled = false;
+    }
+    public Unmute() {
+        this.isMuted = false;
+        this.localStream.getAudioTracks()[0].enabled = true;
     }
 }

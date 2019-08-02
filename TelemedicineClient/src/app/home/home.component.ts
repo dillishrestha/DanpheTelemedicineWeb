@@ -118,45 +118,52 @@ export class HomeComponent implements OnInit {
             this.socketIOService.connectedusers = users;
             this.liveUserList = users;
         }
-        //below if for handling user list to display on ui
-        if (this.userContacts) {
-            if (this.userContacts.length > 0) {
-                for (let i = 0; i < this.userContacts.length; i++) {
-                    var live = false;
-                    var busy = false;
-                    var sessionid = "";
-                    //checking live user is in current user contact list 
-                    //if yes then show video call button
-                    if (this.liveUserList.length > 0) {
-                        var liveusr = this.liveUserList.find(a => a.username == this.userContacts[i].ContactName);
-                        if (liveusr.id) {
-                            live = true;
-                            sessionid = liveusr.id;
-                            busy = liveusr.busy;
-                        }
-                    }
-                    var usr = this.contactListTodispaly.find(a => a.username == this.userContacts[i].ContactName);
-                    //if contact user is not in display data then add it
-                    //else update his status
-                    if (usr == undefined) {
-                        this.contactListTodispaly.push({
-                            username: this.userContacts[i].ContactName,
-                            id: this.userContacts[i].ContactId,
-                            sessionid: sessionid,
-                            live: live,
-                            busy: busy
-                        });
-                    } else {
-                        usr.live = live;
-                        usr.sessionid = sessionid;
-                        usr.busy = busy;
-                    }
-                }
-            }
-        }
+        this.ShowContacts();
         var calldata = JSON.parse(sessionStorage.getItem("callinginfo"));
         if (calldata) {
             //this.router.navigate(['/Clinical']);
+        }
+    }
+    private ShowContacts() {
+        try {
+            //below if for handling user list to display on ui
+            if (this.userContacts) {
+                if (this.userContacts.length > 0) {
+                    for (let i = 0; i < this.userContacts.length; i++) {
+                        var live = false;
+                        var busy = false;
+                        var sessionid = "";
+                        //checking live user is in current user contact list 
+                        //if yes then show video call button
+                        if (this.liveUserList.length > 0) {
+                            var liveusr = this.liveUserList.find(a => a.username == this.userContacts[i].ContactName);
+                            if (liveusr.id) {
+                                live = true;
+                                sessionid = liveusr.id;
+                                busy = liveusr.busy;
+                            }
+                        }
+                        var usr = this.contactListTodispaly.find(a => a.username == this.userContacts[i].ContactName);
+                        //if contact user is not in display data then add it
+                        //else update his status
+                        if (usr == undefined) {
+                            this.contactListTodispaly.push({
+                                username: this.userContacts[i].ContactName,
+                                id: this.userContacts[i].ContactId,
+                                sessionid: sessionid,
+                                live: live,
+                                busy: busy
+                            });
+                        } else {
+                            usr.live = live;
+                            usr.sessionid = sessionid;
+                            usr.busy = busy;
+                        }
+                    }
+                }
+            }
+        } catch (ex) {
+            console.log(ex);
         }
     }
 
@@ -350,6 +357,7 @@ export class HomeComponent implements OnInit {
                     if (res.Status == 'OK') {
                         this.userContacts = res.Results;
                         this.changeDetector.detectChanges;
+                        this.ShowContacts();
                     } else {
                         console.log(res.ErrorMessgae);
                     }
