@@ -30,6 +30,7 @@ namespace DanpheTelemedicineApi.DalLayer
         public DbSet<SessionUserTxnModel> SessionUserTxns { get; set; }
         public DbSet<UserModel> User { get; set; }
         public DbSet<UserContactsModel> UserContacts { get; set; }
+        public DbSet<SysAdminParameters> Parameters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +49,7 @@ namespace DanpheTelemedicineApi.DalLayer
             modelBuilder.Entity<SessionUserTxnModel>().ToTable("SessionUserTxn");
             modelBuilder.Entity<UserModel>().ToTable("User");
             modelBuilder.Entity<UserContactsModel>().ToTable("UserContacts");
+            modelBuilder.Entity<SysAdminParameters>().ToTable("SysAdmin_Parameters");
         }
     }
 }

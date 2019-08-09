@@ -9,14 +9,21 @@ export class DLService {
     //public apiurl = config.apiurl;
     public apiurl = 'https://192.168.0.141:8080';
     constructor(private httpClient: HttpClient) {
-        this.apiurl = 'https://localhost:44391';
-        this.apiurl = this.apiurl + "/api/DanpheTelemedicine";
+        this.apiurl = 'https://localhost:44391/api/DanpheTelemedicine';
     }
 
     /*****************************************************************
      * START GET
      *****************************************************************/
-
+    //get-iceserver-config
+    public GetICEServer() {
+        try {
+            return this.httpClient
+                .get(this.apiurl + "?reqType=get-iceserver-config", this.httpOptions);
+        } catch (ex) {
+            throw ex;
+        }
+    }
     /*****************************
      * login GET
      *****************************/
@@ -42,10 +49,10 @@ export class DLService {
         }
     }
     //get user list
-    public GetUserList(){
-        try{
+    public GetUserList() {
+        try {
             return this.httpClient.get(this.apiurl + "?reqType=get-user-list", this.httpOptions);
-        }catch(ex){
+        } catch (ex) {
             throw ex;
         }
     }
@@ -89,10 +96,10 @@ export class DLService {
     /*****************************************************************
      * START POST
      *****************************************************************/
-    
-     /*****************************
-     * Home POST
-     *****************************/
+
+    /*****************************
+    * Home POST
+    *****************************/
     //when user accepted call then add new session
     public SaveNewSession(data) {
         try {
@@ -121,12 +128,12 @@ export class DLService {
         }
     }
 
-    
+
     /*****************************
      * Main POST
      *****************************/
     //register new user
-    public RegisterNewUser(user){
+    public RegisterNewUser(user) {
         try {
             return this.httpClient.post(this.apiurl + "?reqType=save-user", user, this.httpOptions);
         } catch (ex) {

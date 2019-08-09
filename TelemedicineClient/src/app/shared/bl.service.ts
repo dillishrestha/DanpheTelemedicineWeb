@@ -25,10 +25,19 @@ export class BLService {
         return throwError("Server Disconnected");//(errorMessage);
     }
 
-     /*****************************************************************
-     * START GET
-     *****************************************************************/
-
+    /*****************************************************************
+    * START GET
+    *****************************************************************/
+    //GetICEServer
+    public GetICEServer() {
+        try {
+            return this.dlservice.GetICEServer()
+                .pipe(map((res: any) => JSON.parse(res)),
+                    catchError(this.handleError));
+        } catch (ex) {
+            throw ex;
+        }
+    }
     /*****************************
      * login GET
      *****************************/
@@ -42,7 +51,7 @@ export class BLService {
             throw ex;
         }
     }
-    
+
     /*****************************
      * home GET
      *****************************/
@@ -57,7 +66,7 @@ export class BLService {
         }
     }
     //get user list
-    public GetUserList(){
+    public GetUserList() {
         try {
             return this.dlservice.GetUserList()
                 .pipe(map((res: any) => JSON.parse(res)),
@@ -110,14 +119,14 @@ export class BLService {
             throw ex;
         }
     }
-     
+
     /*****************************************************************
      * START POST
      *****************************************************************/
-    
-     /*****************************
-     * Home POST
-     *****************************/
+
+    /*****************************
+    * Home POST
+    *****************************/
     //when user accepted call then add new session
     public SaveNewSession(data) {
         try {
@@ -132,8 +141,8 @@ export class BLService {
     /*****************************
      * Clinical POST
      *****************************/
-    UploadFile(sessionid,senderid,filedata){
-        return this.dlservice.UploadFile(sessionid,senderid,filedata);
+    UploadFile(sessionid, senderid, filedata) {
+        return this.dlservice.UploadFile(sessionid, senderid, filedata);
     }
     //end video call
     public EndVideoCall(data) {
@@ -150,7 +159,7 @@ export class BLService {
      * Main POST
      *****************************/
     //register new user
-    public RegisterNewUser(data){
+    public RegisterNewUser(data) {
         try {
             var user = JSON.stringify(data)
             return this.dlservice.RegisterNewUser(user)
@@ -159,7 +168,7 @@ export class BLService {
             throw ex;
         }
     }
-    
+
     /*****************************
      * Message POST
      *****************************/

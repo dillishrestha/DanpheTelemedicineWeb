@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit {
              * add user in socket.io for handling user events
              */
             this.AddUser();
+            this.GetICEServer();
 
             /**
              * Database calls
@@ -541,5 +542,21 @@ export class HomeComponent implements OnInit {
                     //console.log("session saved");
                 }
             });
+    }
+    
+    private GetICEServer(){
+        try {
+            this.blService.GetICEServer()
+                .subscribe(res => {
+                    if (res.Status == 'OK') {
+                          var iceServerConfig = res.Results;
+                          sessionStorage.setItem('icesever',iceServerConfig);
+                    } else {
+                        console.log(res.ErrorMessgae);
+                    }
+                });
+        } catch (ex) {
+            console.log(ex);
+        }
     }
 }

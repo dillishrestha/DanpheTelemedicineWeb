@@ -351,6 +351,13 @@ namespace DanpheTelemedicineApi.Controllers
                 #region get user contacts
                 else if (reqType == "get-user-contacts")
                 {
+                    //var contacts = (from uc in dbContext.User
+                    //                select new
+                    //                {
+                    //                    UserId = userid,
+                    //                    ContactId = uc.UserId,
+                    //                    ContactName = uc.UserName
+                    //                }).ToList();
                     var contacts = (from uc in dbContext.UserContacts
                                     join u in dbContext.User on uc.ContactId equals u.UserId
                                     where uc.UserId == userid
@@ -404,6 +411,12 @@ namespace DanpheTelemedicineApi.Controllers
                     responseData.Results = meeting;
                 }
                 #endregion
+                else if(reqType == "get-iceserver-config")
+                {
+                    responseData.Results = dbContext.Parameters
+                        .Where(a=>a.ParameterName == "iceServer")
+                        .Select(a=>a.ParameterValue).FirstOrDefault();
+                }
                 else
                 {
                     responseData.Results = "Request Type not found";

@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Observable, empty } from 'rxjs';
 import { SocketIOService } from '../services/socket.io.service';
-import { async } from 'q';
 import { Router } from '@angular/router';
+import { BLService } from '../shared/bl.service';
 /**
 Step 1: caller creates offer
 
@@ -80,7 +80,8 @@ export class VideoComponent implements OnInit {
     constructor(
         private socketIOService: SocketIOService,
         private router: Router,
-        private changeDetector: ChangeDetectorRef) {
+        private changeDetector: ChangeDetectorRef,
+        private blService: BLService) {
         window.addEventListener("beforeunload", this.BeforeUpload.bind(this));
     }
     private BeforeUpload(e){
@@ -93,6 +94,8 @@ export class VideoComponent implements OnInit {
     SetConnection() {
         //on both side
         this.peerConnection = new RTCPeerConnection();
+        var ii = sessionStorage.getItem("icesever");
+        var ss = JSON.parse(ii);
         var iceServerConfig = {
             iceServers: [{
                 urls: ["stun:bturn1.xirsys1221.com"]
@@ -110,7 +113,7 @@ export class VideoComponent implements OnInit {
             }]
         };
 
-        this.peerConnection.setConfiguration(iceServerConfig);
+        this.peerConnection.setConfiguration(ss);
 
         try {
             this.localStream.getTracks().forEach(track => {
