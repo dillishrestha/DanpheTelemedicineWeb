@@ -280,6 +280,7 @@ CREATE TABLE [dbo].[SysAdmin_Parameters](
 	[ValueDataType] [varchar](50) NULL,
 	[Description] [varchar](1000) NULL,
 	[CreatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL
 PRIMARY KEY CLUSTERED 
 (
 	[ParameterId] ASC
@@ -293,13 +294,14 @@ PRIMARY KEY CLUSTERED
 GO
 
 INSERT [dbo].[SysAdmin_Parameters]
- ([ParameterGroupName], [ParameterName], [ParameterValue], [ValueDataType], [Description], [CreatedOn])
+ ([ParameterGroupName], [ParameterName], [ParameterValue], [ValueDataType], [Description], [CreatedOn], [IsActive])
  VALUES (N'common',
  N'iceServer',
  N'{"iceServers":[{"urls":["stun:bturn1.xirsys1221.com"]},{"username":"9hiaOVYRRn31s_Lv2sGS-iGgtEKg5_3SVWfeEZyO-4GWtKxUv0sCxQVNGkxlk-zBAAAAAF0sGiFhamF5cGF0aWw=","credential":"04f626c0-a6c8-11e9-8ad1-26d3ed601a80","urls":["turn:bturn1.xirsys.com:80?transport=udp","turn:bturn1.xirsys.com:3478?transport=udp","turn:bturn1.xirsys.com:80?transport=tcp","turn:bturn1.xirsys.com:3478?transport=tcp","turns:bturn1.xirsys.com:443?transport=tcp","turns:bturn1.xirsys.com:5349?transport=tcp"]}]}',
  N'json',
  NULL,
- GETDATE())
+ GETDATE(),
+ 1)
 GO
 
 
