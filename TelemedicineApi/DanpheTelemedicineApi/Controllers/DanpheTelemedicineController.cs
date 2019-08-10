@@ -414,7 +414,7 @@ namespace DanpheTelemedicineApi.Controllers
                 else if(reqType == "get-iceserver-config")
                 {
                     responseData.Results = dbContext.Parameters
-                        .Where(a=>a.ParameterName == "iceServer")
+                        .Where(a=>a.ParameterName == "iceServer" && a.IsActive == true)
                         .Select(a=>a.ParameterValue).FirstOrDefault();
                 }
                 else
